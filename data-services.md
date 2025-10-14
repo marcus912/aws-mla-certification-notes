@@ -153,16 +153,55 @@ AWS services for data storage, processing, and preparation for machine learning.
 ## Data Labeling
 
 ### Amazon SageMaker Ground Truth `#exam-tip`
-- **Purpose:** Data labeling service
-- **Features:**
-  - Human labeling workflows (Mechanical Turk, private workforce)
-  - Active learning - Reduces labeling cost by auto-labeling easy examples
-  - Built-in workflows: Image classification, object detection, semantic segmentation, text classification, named entity recognition
-  - Custom workflows supported
-- **Cost optimization:**
-  - Automatic labeling for confident predictions
-  - Typically 70% less cost vs manual labeling
-- **Output:** Labeled datasets in S3 for SageMaker training
+**Purpose:** Data labeling service with human-in-the-loop
+
+**Key Features:**
+- **Human labeling workflows** with three workforce options:
+  - **Mechanical Turk** - Public crowdsourcing (default, cheapest)
+  - **Private workforce** - Your employees (for confidential data)
+  - **Vendor workforce** - Third-party managed teams (for domain expertise)
+- **Active learning** - ML model auto-labels easy examples, humans label hard ones
+- **Built-in workflows:**
+  - Image: classification, object detection (bounding boxes), semantic segmentation
+  - Text: classification, named entity recognition
+  - Video: object tracking, activity recognition
+  - 3D point clouds: object detection, semantic segmentation
+- **Custom workflows** - Build your own labeling UI
+
+**How Active Learning Works:**
+1. Humans label initial small dataset
+2. Ground Truth trains ML model on labeled data
+3. Model auto-labels confident predictions
+4. Humans review only low-confidence or complex items
+5. Result: 70% cost reduction vs full manual labeling
+
+**Workforce Selection Guide:** `#exam-tip`
+
+| Data Type | Best Workforce |
+|-----------|----------------|
+| Public images (cats, dogs) | Mechanical Turk |
+| Company documents (invoices) | Private workforce |
+| Medical images (X-rays) | Private or Vendor (NOT MTurk) `#gotcha` |
+| Product photos (internal) | Private workforce |
+| Social media content | Mechanical Turk |
+| Legal documents | Private workforce (confidential) |
+
+**Cost Optimization:**
+- Active learning reduces labeling by ~70%
+- Consensus labeling (multiple workers) improves quality
+- Start with MTurk for cost, switch to private if quality issues
+
+**Output:**
+- Labeled datasets in S3
+- Manifest files (JSON Lines format)
+- Ready for SageMaker training
+
+**Exam Tips:** `#exam-tip`
+- **Default workforce:** Mechanical Turk (public, cheap, fast)
+- **Sensitive data:** Use private workforce (NOT MTurk)
+- **Active learning:** Automatic for supported workflows, reduces cost 70%
+- **Integration:** Works with A2I for human review workflows
+- **Quality control:** Consensus (3-5 workers per item), annotation consolidation
 
 ## Data Format Recommendations `#exam-tip`
 

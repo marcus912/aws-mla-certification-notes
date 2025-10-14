@@ -19,6 +19,8 @@
 | Personalization/recommendations | Personalize |
 | Fraud detection | Fraud Detector |
 | Human review of ML predictions | Augmented AI (A2I) |
+| Data labeling (public data) | Ground Truth + Mechanical Turk |
+| Data labeling (confidential data) | Ground Truth + Private workforce |
 | Anomaly detection in metrics | Lookout for Metrics |
 | Manufacturing defect detection | Lookout for Vision |
 | Enterprise Q&A (generative AI) | Q Business |

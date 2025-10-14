@@ -276,9 +276,9 @@ Pre-trained AI/ML services that don't require ML expertise. Ready-to-use APIs fo
 - **Human review workflows** - Route low-confidence predictions to humans
 - **Integration:** Rekognition, Textract, SageMaker, Custom models
 - **Workforce options:**
-  - Amazon Mechanical Turk
+  - Amazon Mechanical Turk (public crowdsourcing)
   - Private workforce (your employees)
-  - Vendor workforce
+  - Vendor workforce (third-party managed teams)
 - **Review UI templates** - Custom or pre-built
 - **Confidence thresholds** - Automatic triggering
 
@@ -299,6 +299,66 @@ Pre-trained AI/ML services that don't require ML expertise. Ready-to-use APIs fo
 - Use when high accuracy is critical
 - Integrates with Rekognition (content moderation), Textract (forms)
 - Can use for SageMaker custom models
+
+### Amazon Mechanical Turk (MTurk) `#exam-tip`
+**Purpose:** Crowdsourcing marketplace for human intelligence tasks (HITs)
+
+**What It Is:**
+- Platform connecting requesters with workers (called "Turkers")
+- Workers perform tasks that require human judgment
+- Pay-per-task model
+- Global workforce (hundreds of thousands of workers)
+
+**Key Characteristics:**
+- **Public workforce** - Anyone can sign up as a worker
+- **Scalable** - Handle thousands of tasks in parallel
+- **Cost-effective** - Typically $0.01-$1.00 per task
+- **Fast turnaround** - Tasks completed in minutes to hours
+- **Quality control** - Qualification tests, worker ratings, majority voting
+
+**Common ML Tasks:**
+- **Data labeling** - Image classification, bounding boxes
+- **Text annotation** - Sentiment labeling, entity tagging
+- **Data collection** - Surveys, content generation
+- **Data verification** - Validate ML predictions
+- **Content moderation** - Flag inappropriate content
+
+**Integration with AWS ML Services:**
+- **SageMaker Ground Truth** - Uses MTurk for data labeling
+- **Amazon A2I** - Uses MTurk for human review workflows
+- **Direct API access** - Build custom HIT workflows
+
+**When to Use MTurk vs Other Workforces:** `#exam-tip`
+
+| Use Case | Workforce Choice |
+|----------|------------------|
+| Public data, low sensitivity | Mechanical Turk (cheapest, fastest) |
+| Confidential/proprietary data | Private workforce (your employees) |
+| Need domain expertise | Vendor workforce (managed experts) |
+| High volume, simple tasks | Mechanical Turk |
+| Complex tasks requiring training | Private or vendor workforce |
+| HIPAA/PII data | Private workforce (NOT MTurk) `#gotcha` |
+
+**Exam Tips:** `#exam-tip`
+- **MTurk = public workforce** - Don't use for sensitive/confidential data
+- **Ground Truth uses MTurk** by default but also supports private workforces
+- **A2I workforce options:** MTurk (public), Private (your team), Vendor (managed)
+- **Cost:** MTurk cheapest, Vendor most expensive
+- **Quality control:** Use consensus (multiple workers), qualifications, gold standards
+- **Not for sensitive data:** PHI, PII, trade secrets → use private workforce `#gotcha`
+
+**Quality Control Strategies:**
+1. **Consensus** - Multiple workers label same item, use majority vote
+2. **Qualifications** - Require workers to pass tests
+3. **Master workers** - Pre-vetted high-quality workers (premium)
+4. **Gold standard data** - Hidden test items with known answers
+5. **Worker ratings** - Track and filter by accuracy
+
+**Pricing Model:**
+- Pay per completed task (HIT)
+- Set your own price per task
+- MTurk takes 20% fee (40% for 10+ workers per task)
+- Example: $0.10/task, 1000 tasks = $120 total cost ($100 + $20 fee)
 
 ## Anomaly Detection
 
