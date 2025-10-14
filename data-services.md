@@ -1,0 +1,206 @@
+# AWS Data Services for ML
+
+**Tags:** `#core` `#important` `#hands-on`
+
+## Overview
+AWS services for data storage, processing, and preparation for machine learning.
+
+## Data Storage
+
+### Amazon S3
+- **Primary storage** for ML training data
+- **Use cases:** Raw data, processed data, model artifacts
+- **Best practices:**
+  - Use S3 prefixes for organization
+  - Enable versioning for datasets
+  - Use S3 Intelligent-Tiering for cost optimization
+  - Partition data for efficient querying (Athena)
+
+### Amazon EFS (Elastic File System)
+- Shared file system for ML training
+- **Use case:** Multiple instances need access to same data
+- **SageMaker integration:** Attach EFS to training jobs
+
+### Amazon FSx for Lustre
+- High-performance file system
+- **Use case:** HPC workloads, large-scale training
+- **Speed:** Sub-millisecond latencies
+- **S3 integration:** Automatically sync with S3
+
+## Data Processing & ETL
+
+### AWS Glue `#important`
+
+**Overview:** Serverless ETL service
+
+**Components:**
+- **Glue Crawler** - Auto-discovers schema, populates Data Catalog
+- **Glue Data Catalog** - Centralized metadata repository
+- **Glue ETL Jobs** - Apache Spark-based transformations
+- **Glue DataBrew** - No-code visual data preparation (250+ transformations)
+
+**What is "Presto under the hood"?** `#exam-tip`
+- **Context:** AWS Athena uses **Presto** (now called **Trino**) as its query engine
+- **Presto/Trino:** Open-source distributed SQL query engine
+- **"Under the hood"** means: The underlying technology powering the service
+- **What it means for you:**
+  - Athena queries use Presto SQL syntax
+  - Fast interactive queries on S3 data
+  - Supports complex SQL operations (joins, aggregations, window functions)
+  - Can query multiple data sources (S3, databases, data lakes)
+- **Note:** Glue ETL uses **Spark**, not Presto
+- **Athena vs Glue:** Athena (Presto) = ad-hoc queries; Glue (Spark) = batch ETL jobs
+
+**Use Cases:**
+- Discover and catalog data for SageMaker
+- Transform data before training
+- Create training/validation/test splits
+- Feature engineering at scale
+
+**Integration with ML:**
+- SageMaker can read from Glue Data Catalog
+- Data Wrangler can import from Glue
+
+### Amazon Athena
+- **Purpose:** Interactive SQL queries on S3 data
+- **Serverless:** Pay per query (data scanned)
+- **Use cases:**
+  - Exploratory data analysis
+  - Data validation before training
+  - Query training results
+- **Best practices:**
+  - Partition data to reduce scan costs
+  - Use Parquet/ORC formats (columnar, compressed)
+  - Create views for common queries
+
+### Amazon EMR (Elastic MapReduce) `#exam-tip`
+- **Purpose:** Managed Hadoop/Spark clusters
+- **Use cases:**
+  - Large-scale data processing
+  - Complex ETL workflows
+  - Feature engineering on big data
+- **Frameworks:** Spark, Hadoop, Hive, Presto, Flink
+- **ML integration:**
+  - Process data, store in S3, train with SageMaker
+  - Spark MLlib for distributed ML
+  - SageMaker Spark library for direct integration
+
+### AWS Glue DataBrew
+- No-code data preparation
+- Visual interface with 250+ transformations
+- Profile data quality
+- Generate data quality reports
+- **Output:** Cleaned data to S3 for ML training
+
+## Data Streaming
+
+### Amazon Kinesis `#important`
+
+**Kinesis Data Streams:**
+- Real-time data streaming
+- **Use case:** Ingest real-time data for online learning
+- **SageMaker integration:** Real-time inference with streaming data
+
+**Kinesis Data Firehose:**
+- Load streaming data to S3, Redshift, Elasticsearch
+- **Use case:** Batch training data collection
+- **Transformations:** Lambda functions for preprocessing
+
+**Kinesis Data Analytics:**
+- SQL queries on streaming data
+- **ML features:**
+  - **RANDOM_CUT_FOREST()** - Real-time anomaly detection
+  - Aggregations for feature engineering
+- **Use case:** Real-time anomaly detection, streaming feature computation
+
+**Kinesis Video Streams:**
+- Streaming video data
+- **ML integration:** SageMaker Ground Truth for video labeling
+
+### Amazon Managed Streaming for Apache Kafka (MSK)
+- Managed Kafka clusters
+- **Use case:** Event streaming, log aggregation
+- Alternative to Kinesis for Kafka users
+
+## Data Warehousing
+
+### Amazon Redshift
+- **Purpose:** Data warehouse for analytics
+- **Use cases:**
+  - Aggregate historical data for ML features
+  - Store processed features
+  - Batch feature computation
+- **ML integration:**
+  - Redshift ML - Train models using SQL (SageMaker Autopilot under the hood)
+  - SageMaker can read from Redshift
+  - Data Wrangler integration
+
+### Amazon Redshift Spectrum
+- Query S3 data directly from Redshift
+- **Use case:** Join warehouse data with S3 data lakes
+
+## Data Lakes
+
+### AWS Lake Formation
+- **Purpose:** Build, secure, manage data lakes
+- **Features:**
+  - Simplify data ingestion
+  - Centralized permissions management
+  - Data catalog (uses Glue Data Catalog)
+  - Row/column-level security
+- **ML integration:** SageMaker can query Lake Formation secured data
+
+## Data Labeling
+
+### Amazon SageMaker Ground Truth `#exam-tip`
+- **Purpose:** Data labeling service
+- **Features:**
+  - Human labeling workflows (Mechanical Turk, private workforce)
+  - Active learning - Reduces labeling cost by auto-labeling easy examples
+  - Built-in workflows: Image classification, object detection, semantic segmentation, text classification, named entity recognition
+  - Custom workflows supported
+- **Cost optimization:**
+  - Automatic labeling for confident predictions
+  - Typically 70% less cost vs manual labeling
+- **Output:** Labeled datasets in S3 for SageMaker training
+
+## Data Format Recommendations `#exam-tip`
+
+| Format | Use Case | Pros | Cons |
+|--------|----------|------|------|
+| CSV | Small tabular data | Simple, readable | Large file size, slow parsing |
+| Parquet | Large tabular data | Columnar, compressed, fast | Binary (not human-readable) |
+| RecordIO-Protobuf | SageMaker training | Efficient, Pipe mode support | AWS-specific |
+| JSON Lines | Semi-structured | Flexible schema | Larger than Parquet |
+| TFRecord | TensorFlow | Optimized for TF | Framework-specific |
+| Image files (JPG/PNG) | Computer vision | Standard formats | Need manifest file |
+
+**Best Practice:** Use Parquet for large datasets, CSV for small/simple datasets
+
+## Exam Tips `#exam-tip`
+- **Glue Crawler:** Auto-discover schema, populate catalog
+- **Athena:** Quick SQL queries on S3 (uses Presto)
+- **EMR:** Large-scale Spark/Hadoop processing
+- **Kinesis Data Analytics:** Real-time anomaly detection with RCF
+- **Ground Truth:** Reduces labeling cost with active learning
+- **S3:** Primary storage for all ML data
+- **Parquet format:** Best for large tabular datasets
+- **"Presto under the hood":** Refers to Athena's query engine
+
+## Data Pipeline Selection
+
+| Scenario | Service |
+|----------|---------|
+| Simple ETL, auto-schema discovery | AWS Glue |
+| Ad-hoc SQL queries on S3 | Amazon Athena |
+| Large-scale Spark processing | Amazon EMR |
+| Real-time streaming analytics | Kinesis Data Analytics |
+| No-code data preparation | Glue DataBrew |
+| Data labeling | SageMaker Ground Truth |
+| Data warehouse analytics | Amazon Redshift |
+| Secure data lake | AWS Lake Formation |
+
+## Related Topics
+- [Feature Engineering](./feature-engineering.md)
+- [Amazon SageMaker](./sagemaker.md)
+- [AWS ML Algorithms](./aws-ml-algorithms.md)
