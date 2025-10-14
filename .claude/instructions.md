@@ -5,6 +5,14 @@ This project contains study notes for the AWS Machine Learning Associate (MLA) c
 
 ## Core Rules for AI Assistants
 
+### 0. Git Workflow `#important`
+- **NEVER commit or push changes automatically**
+- **NEVER run git add, git commit, or git push commands**
+- **DO suggest commit messages** when changes are complete
+- **Let the user handle all git operations**
+- You may run `git status` or `git diff` to show changes
+- User will commit and push when ready
+
 ### 1. Note Style & Format
 - **Always use Markdown format** (.md files)
 - **Keep notes brief and scannable** - Use bullet points, tables, and short paragraphs
