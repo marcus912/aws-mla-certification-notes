@@ -62,6 +62,53 @@ Techniques and best practices for training ML models and evaluating their perfor
 - **Goal:** Minimize total error = Bias² + Variance + Irreducible Error
 - **Sweet spot:** Balance between underfitting and overfitting
 
+## Regularization `#important`
+
+**Purpose:** Prevent overfitting by adding penalty for model complexity
+
+### L1 Regularization (Lasso) `#exam-tip`
+- **How it works:** Adds penalty = λ × |weights|
+- **Effect:** Drives some weights to exactly zero → **Feature selection**
+- **Result:** Sparse models (few non-zero features)
+- **When to use:**
+  - Many features, want automatic feature selection
+  - Interpretability important (fewer features)
+  - Suspect many features are irrelevant
+- **AWS algorithms:** Linear Learner (`l1`), XGBoost (`alpha`)
+
+### L2 Regularization (Ridge) `#exam-tip`
+- **How it works:** Adds penalty = λ × weights²
+- **Effect:** Shrinks weights toward zero but doesn't eliminate them
+- **Result:** All features kept but with reduced impact
+- **When to use:**
+  - Features are correlated
+  - Want to keep all features but reduce overfitting
+  - More stable than L1
+- **AWS algorithms:** Linear Learner (`wd` = weight decay), XGBoost (`lambda`)
+
+### Elastic Net
+- **Combination:** L1 + L2 regularization
+- **When to use:** Want feature selection + stability
+- **Linear Learner:** Set both `l1` and `wd` (weight decay)
+
+### Regularization Comparison
+
+| Aspect | L1 (Lasso) | L2 (Ridge) | Elastic Net |
+|--------|-----------|-----------|-------------|
+| Feature selection | ✅ Yes (zeros out) | ❌ No (shrinks) | ✅ Yes |
+| Handles correlated features | ❌ Picks one randomly | ✅ Yes, shrinks both | ✅ Yes |
+| Sparsity | ✅ Sparse model | ❌ Dense model | ⚠️ Some sparsity |
+| Stability | ⚠️ Less stable | ✅ More stable | ✅ Stable |
+| Interpretability | ✅ Easier (fewer features) | ❌ Harder (all features) | ⚠️ Moderate |
+
+### Exam Tips `#exam-tip`
+- **L1 for feature selection:** Use when you have many features
+- **L2 for stability:** Use when features are correlated
+- **High λ (lambda):** More regularization, simpler model (may underfit)
+- **Low λ:** Less regularization, complex model (may overfit)
+- **Overfitting solution:** Increase regularization (higher λ)
+- **Underfitting solution:** Decrease regularization (lower λ)
+
 ## Model Monitoring `#exam-tip`
 
 ### Data Drift
@@ -129,15 +176,67 @@ Techniques and best practices for training ML models and evaluating their perfor
 
 ## Hyperparameter Tuning
 
-### Methods
-- **Grid Search** - Try all combinations (exhaustive)
-- **Random Search** - Random sampling (more efficient)
-- **Bayesian Optimization** - Smart search using previous results (SageMaker default)
+### Common Hyperparameters Across Algorithms `#exam-tip`
+
+#### Learning Rate
+- **What:** Step size for gradient descent updates
+- **Range:** Typically 0.001 to 0.3
+- **High learning rate:** Fast training, may overshoot optimal solution
+- **Low learning rate:** Slow training, may get stuck in local minimum
+- **Adaptive:** Some algorithms (Adam, AdaGrad) adjust automatically
+- **Algorithms:** Linear Learner, XGBoost, Neural Networks, DeepAR
+
+#### Mini-Batch Size
+- **What:** Number of samples processed before updating model weights
+- **Small batches (32-128):**
+  - More frequent updates, noisier gradient
+  - Better generalization, more regularization effect
+  - Slower training per epoch
+- **Large batches (512-2048):**
+  - Fewer updates, smoother gradient
+  - Faster training per epoch
+  - May overfit, needs more regularization
+- **Algorithms:** Linear Learner, Neural Networks, XGBoost
+
+#### Number of Epochs
+- **What:** Complete passes through training dataset
+- **Too few:** Underfitting (model hasn't learned enough)
+- **Too many:** Overfitting (model memorizes training data)
+- **Early stopping:** Stop when validation error stops improving
+
+### Tuning Methods
+
+#### Grid Search
+- **How:** Try all combinations of hyperparameter values
+- **Pros:** Exhaustive, guaranteed to find best in grid
+- **Cons:** Exponentially slow (n^d for n values, d parameters)
+- **When:** Few hyperparameters, small search space
+
+#### Random Search
+- **How:** Randomly sample hyperparameter combinations
+- **Pros:** More efficient than grid search, better for high dimensions
+- **Cons:** May miss optimal combination
+- **When:** Many hyperparameters, large search space
+
+#### Bayesian Optimization `#exam-tip`
+- **How:** Smart search using previous results to guide next tries
+- **Pros:** Most efficient, fewer iterations needed
+- **Cons:** More complex, slight overhead per iteration
+- **When:** Expensive training jobs (SageMaker default)
+- **SageMaker:** Automatic Model Tuning uses this
 
 ### SageMaker Automatic Model Tuning
-- Uses Bayesian optimization
-- Specify: metric to optimize, hyperparameter ranges
-- Max 750 jobs per tuning job
+- **Algorithm:** Bayesian optimization
+- **Setup:** Specify metric to optimize, hyperparameter ranges
+- **Limits:** Max 750 training jobs per tuning job
+- **Strategies:**
+  - **Bayesian** (default) - Smart search
+  - **Random** - Random sampling
+  - **Grid** - Exhaustive search (small spaces only)
+- **Best practices:**
+  - Start with wide ranges, narrow down
+  - Use log scale for learning rate
+  - Monitor cost (each job = charged training time)
 
 ## Exam Tips `#exam-tip`
 - **Data drift:** Input data distribution changes

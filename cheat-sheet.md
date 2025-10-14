@@ -77,6 +77,35 @@ F1 Score = 2 × (Precision × Recall) / (Precision + Recall)
 Accuracy = (TP + TN) / (TP + TN + FP + FN)
 ```
 
+## Important Hyperparameters `#exam-tip`
+
+### Regularization (Prevent Overfitting)
+
+| Parameter | Algorithm | Effect | Use Case |
+|-----------|-----------|--------|----------|
+| `l1` | Linear Learner | Feature selection (zeros out) | Many features, want sparsity |
+| `wd` | Linear Learner | Shrink weights (L2) | Correlated features |
+| `alpha` | XGBoost | L1 regularization | Feature selection |
+| `lambda` | XGBoost | L2 regularization | Prevent overfitting |
+
+### Class Imbalance
+
+| Parameter | Algorithm | Purpose |
+|-----------|-----------|---------|
+| `balance_multiclass_weights` | Linear Learner | Auto-weight minority classes |
+| `scale_pos_weight` | XGBoost | Ratio of negative/positive |
+| `target_recall` | Linear Learner | Optimize for recall (fraud) |
+| `target_precision` | Linear Learner | Optimize for precision (spam) |
+
+### Training Control
+
+| Parameter | Algorithms | Range | Effect |
+|-----------|-----------|-------|--------|
+| `learning_rate` / `eta` | Linear Learner, XGBoost | 0.001-0.3 | Convergence speed |
+| `mini_batch_size` | Linear Learner | 1-10000 | Training speed |
+| `max_depth` | XGBoost | 1-10+ | Tree complexity |
+| `num_round` | XGBoost | Varies | Number of trees |
+
 ### Cost Optimization Tips `#exam-tip`
 - Use Spot instances with checkpointing (90% savings)
 - Batch Transform instead of persistent endpoints
