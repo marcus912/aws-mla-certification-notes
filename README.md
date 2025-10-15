@@ -33,16 +33,14 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 - [Amazon SageMaker](./sagemaker.md) - Custom ML model building
 - [SageMaker Clarify](./sagemaker-clarify.md) - Bias & Explainability
 - [AWS ML Algorithms](./aws-ml-algorithms.md) - Random Cut Forest, etc.
-- [AWS AI Services](./aws-ai-services.md) - Comprehend, Rekognition, Lex, etc.
-- [Data Services](./data-services.md) - S3, Glue, Athena, EMR, Kinesis
-- [Amazon Bedrock](./bedrock.md) - Foundation Models
-- [MLOps & Deployment](./mlops-deployment.md)
+- [AWS AI Services](./aws-ai-services.md) - Comprehend, Rekognition, Lex, Textract, Kendra, etc.
+- [Data Services](./data-services.md) - S3, Glue, Athena, EMR, Kinesis, Ground Truth
+- [MLOps & Deployment](./mlops-deployment.md) - Endpoints, monitoring, CI/CD
 
-### Quick References & Study Guide
+### Quick References
 - [📝 Study Guide](./study-guide.md) - **START HERE!** Exam strategy & roadmap
 - [⚡ Cheat Sheet](./cheat-sheet.md) - Quick reference tables
-- [CLI Commands](./cli-commands.md)
-- [Service Limits & Quotas](./service-limits.md)
+- [📋 Template](./TEMPLATE.md) - Template for creating new notes
 
 ## Study Progress
 
@@ -63,10 +61,9 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 - [ ] Search & Recommendations (Kendra, Personalize)
 - [ ] Specialized (A2I, Lookout, Fraud Detector, Q)
 
-### Data & Infrastructure
-- [ ] Data Services (S3, Glue, Athena, EMR, Kinesis)
-- [ ] Amazon Bedrock (Foundation Models)
-- [ ] MLOps & Deployment
+### Data & MLOps
+- [ ] Data Services (S3, Glue, Athena, EMR, Kinesis, Ground Truth)
+- [ ] MLOps & Deployment (Endpoints, Model Monitor, Pipelines)
 
 ## Tags
 - `#core` - Core exam topic
@@ -77,11 +74,15 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 
 ## 📊 Repository Stats
 
-- **Total Notes:** 12 comprehensive markdown files
-- **Coverage:** All 4 AWS MLA exam domains
-- **Services Covered:** 15+ AWS ML/AI services
-- **Exam Tips:** 100+ throughout the notes
-- **Study Time:** 10-week suggested plan
+- **Total Notes:** 13 comprehensive markdown files
+- **Total Lines:** 2,812 lines of exam-focused content
+- **Coverage:** All 4 AWS MLA exam domains (100%)
+- **Services Covered:** 25+ AWS ML/AI services
+  - 16 AI Services (Comprehend, Rekognition, Lex, Textract, etc.)
+  - SageMaker ecosystem (Training, Clarify, Ground Truth, Pipelines)
+  - Data services (S3, Glue, Athena, EMR, Kinesis, Redshift)
+- **Exam Tips:** 95+ `#exam-tip` tags throughout
+- **Study Time:** 10-week suggested plan in study guide
 
 ## 🤝 Contributing
 
@@ -125,7 +126,8 @@ aws-mla-certification-notes/
 │   ├── sagemaker-clarify.md
 │   ├── aws-ml-algorithms.md
 │   ├── aws-ai-services.md
-│   └── data-services.md
+│   ├── data-services.md
+│   └── mlops-deployment.md
 │
 ├── Quick References
 │   ├── study-guide.md         # START HERE!
