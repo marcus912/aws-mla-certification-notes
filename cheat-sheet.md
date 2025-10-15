@@ -30,20 +30,24 @@
 
 ## SageMaker Built-in Algorithm Selection
 
-| Problem Type | Algorithm |
-|--------------|-----------|
-| Binary/multi-class classification (tabular) | Linear Learner, XGBoost |
-| Regression (tabular) | Linear Learner, XGBoost |
-| Time series forecasting | DeepAR |
-| Recommendations | Factorization Machines |
-| Clustering | K-Means |
-| Dimensionality reduction | PCA |
-| Topic modeling | LDA, NTM |
-| Text classification | BlazingText |
-| Image classification | Image Classification (ResNet) |
-| Object detection | Object Detection |
-| Semantic segmentation | Semantic Segmentation |
-| Anomaly detection | Random Cut Forest |
+| Problem Type | Algorithm | Best For |
+|--------------|-----------|----------|
+| Binary/multi-class classification (tabular) | Linear Learner, XGBoost, KNN | XGBoost (accuracy), Linear Learner (speed) |
+| Regression (tabular) | Linear Learner, XGBoost, KNN | XGBoost (default choice) |
+| Time series forecasting | DeepAR | Probabilistic forecasts |
+| Recommendations | Factorization Machines | Sparse user-item data |
+| Clustering | K-Means | Group similar items |
+| Dimensionality reduction | PCA | Feature reduction |
+| Topic modeling | LDA, NTM | LDA (interpretable), NTM (large/fast) |
+| Text classification | BlazingText | Fast sentiment analysis |
+| Word embeddings | BlazingText | Word2Vec mode |
+| Sequence-to-sequence | Seq2Seq | Machine translation |
+| Object embeddings | Object2Vec | Similarity learning |
+| Image classification | Image Classification | Single label per image |
+| Object detection | Object Detection | Bounding boxes |
+| Semantic segmentation | Semantic Segmentation | Pixel-level masks |
+| Anomaly detection (general) | Random Cut Forest | Unsupervised outliers |
+| Anomaly detection (IP) | IP Insights | Account security |
 
 ## Data Format Requirements `#exam-tip`
 
@@ -51,10 +55,21 @@
 |-----------|-------------------|
 | Linear Learner | RecordIO-protobuf, CSV |
 | XGBoost | CSV, LibSVM, Parquet |
+| KNN | RecordIO-protobuf, CSV |
+| Factorization Machines | RecordIO-protobuf (only) |
 | DeepAR | JSON Lines |
+| K-Means | RecordIO-protobuf, CSV |
+| PCA | RecordIO-protobuf, CSV |
+| LDA | RecordIO-protobuf, CSV |
+| NTM | RecordIO-protobuf, CSV |
+| Random Cut Forest | RecordIO-protobuf, CSV |
+| IP Insights | CSV |
 | Image Classification | RecordIO, Image files (JPG, PNG) |
 | Object Detection | RecordIO, Image files + JSON |
+| Semantic Segmentation | Image files + PNG masks |
 | BlazingText | Text file (one sentence per line) |
+| Seq2Seq | RecordIO-protobuf, JSON |
+| Object2Vec | JSON |
 
 ## Instance Type Selection
 
@@ -135,6 +150,13 @@ Accuracy = (TP + TN) / (TP + TN + FP + FN)
 | Moderate user content | Rekognition (images), Comprehend (text) |
 | Build recommendation engine | Personalize |
 | Low-confidence predictions | Augmented AI (human review) |
+| Gradient boosting on SageMaker | XGBoost (NOT LightGBM) |
+| Time series with confidence intervals | DeepAR |
+| Translate languages | Seq2Seq (custom) or Translate (pre-trained) |
+| Find objects in images | Object Detection |
+| Pixel-level segmentation | Semantic Segmentation |
+| Account takeover detection | IP Insights |
+| Topic discovery in documents | LDA or NTM |
 
 ## Quick AI Service Selection `#exam-tip`
 

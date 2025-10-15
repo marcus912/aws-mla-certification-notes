@@ -32,7 +32,7 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 ### AWS ML/AI Services
 - [Amazon SageMaker](./sagemaker.md) - Custom ML model building
 - [SageMaker Clarify](./sagemaker-clarify.md) - Bias & Explainability
-- [AWS ML Algorithms](./aws-ml-algorithms.md) - Random Cut Forest, etc.
+- [AWS ML Algorithms](./aws-ml-algorithms.md) - All 17 SageMaker built-in algorithms
 - [AWS AI Services](./aws-ai-services.md) - Comprehend, Rekognition, Lex, Textract, Kendra, etc.
 - [Data Services](./data-services.md) - S3, Glue, Athena, EMR, Kinesis, Ground Truth
 - [MLOps & Deployment](./mlops-deployment.md) - Endpoints, monitoring, CI/CD
@@ -52,7 +52,7 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 ### AWS ML Services
 - [ ] Amazon SageMaker (Custom ML)
 - [ ] SageMaker Clarify (Bias Detection)
-- [ ] AWS ML Algorithms (RCF, etc.)
+- [ ] AWS ML Algorithms (17 built-in algorithms)
 
 ### AWS AI Services (Pre-trained)
 - [ ] NLP Services (Comprehend, Translate, Transcribe, Polly)
@@ -75,13 +75,20 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 ## 📊 Repository Stats
 
 - **Total Notes:** 13 comprehensive markdown files
-- **Total Lines:** 2,812 lines of exam-focused content
+- **Total Lines:** 3,278 lines of exam-focused content
 - **Coverage:** All 4 AWS MLA exam domains (100%)
+- **Algorithms Covered:** 17 SageMaker built-in algorithms
+  - Supervised: Linear Learner, XGBoost, KNN, Factorization Machines
+  - Computer Vision: Image Classification, Object Detection, Semantic Segmentation
+  - NLP: BlazingText, Seq2Seq, Object2Vec
+  - Time Series: DeepAR
+  - Unsupervised: K-Means, PCA, LDA, NTM
+  - Anomaly Detection: Random Cut Forest, IP Insights
 - **Services Covered:** 25+ AWS ML/AI services
   - 16 AI Services (Comprehend, Rekognition, Lex, Textract, etc.)
   - SageMaker ecosystem (Training, Clarify, Ground Truth, Pipelines)
   - Data services (S3, Glue, Athena, EMR, Kinesis, Redshift)
-- **Exam Tips:** 95+ `#exam-tip` tags throughout
+- **Exam Tips:** 118 `#exam-tip` tags throughout
 - **Study Time:** 10-week suggested plan in study guide
 
 ## 🤝 Contributing
