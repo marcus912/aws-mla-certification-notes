@@ -46,8 +46,8 @@ Comprehensive guide to SageMaker built-in algorithms. For detailed hyperparamete
 - Feature importance scores
 
 **Hyperparameters:**
-- `max_depth` - Tree depth (overfitting control)
-- `eta` - Learning rate
+- `eta` - Learning rate (step size shrinkage, prevents overfitting)
+- `max_depth` - Tree depth (limits tree complexity)
 - `subsample` - Row sampling ratio
 - `colsample_bytree` - Column sampling ratio
 - `alpha`, `lambda` - L1, L2 regularization
