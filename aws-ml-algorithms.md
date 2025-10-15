@@ -61,6 +61,8 @@ Comprehensive guide to SageMaker built-in algorithms. For detailed hyperparamete
 
 **When to use:** Default choice for tabular data, high accuracy needed
 
+**Exam Note:** XGBoost is the built-in gradient boosting algorithm on SageMaker. For any gradient boosting question on the exam, choose XGBoost.
+
 📝 **Detailed hyperparameters:** See [SageMaker - XGBoost](./sagemaker.md#xgboost-hyperparameters)
 
 ---
@@ -654,30 +656,6 @@ Comprehensive guide to SageMaker built-in algorithms. For detailed hyperparamete
 
 ---
 
-## Note on LightGBM `#important`
-
-**LightGBM is NOT a SageMaker built-in algorithm.**
-
-**What is LightGBM?**
-- Gradient boosting framework (similar to XGBoost)
-- Developed by Microsoft
-- Faster training than XGBoost on large datasets
-- Lower memory usage
-
-**How to use LightGBM on SageMaker:**
-1. **Bring Your Own Container (BYOC)** - Create custom Docker image
-2. **SageMaker Processing** - Use with scikit-learn
-3. **Use XGBoost instead** - SageMaker's built-in alternative
-
-**When to use LightGBM vs XGBoost:** `#exam-tip`
-- **Exam answer:** Use XGBoost (it's built-in)
-- **Real world:** LightGBM for very large datasets (>10M rows) with custom container
-- **Performance:** Similar accuracy, LightGBM faster on large data
-
-**Important for exam:** If asked about gradient boosting on SageMaker, answer **XGBoost**, not LightGBM.
-
----
-
 ## Exam Tips `#exam-tip`
 
 ### Algorithm Selection
@@ -709,7 +687,7 @@ Comprehensive guide to SageMaker built-in algorithms. For detailed hyperparamete
 - **"Too many features (1000+)"** → PCA first, then model
 - **"Unsupervised anomaly detection"** → Random Cut Forest
 - **"Account takeover detection"** → IP Insights
-- **"Gradient boosting on SageMaker"** → XGBoost (NOT LightGBM)
+- **"Gradient boosting on tabular data"** → XGBoost
 
 ### Input Format Quick Reference
 - **RecordIO-protobuf:** Most SageMaker algorithms (efficient)
@@ -723,7 +701,6 @@ Comprehensive guide to SageMaker built-in algorithms. For detailed hyperparamete
 ## Gotchas `#gotcha`
 
 ### General
-- **LightGBM:** Not built-in, requires custom container (use XGBoost instead)
 - **Feature scaling:** Important for KNN, PCA, RCF (normalize features)
 - **Missing values:** XGBoost handles automatically, others need imputation
 - **Categorical features:** Encode as numbers (one-hot or label encoding)

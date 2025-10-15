@@ -187,7 +187,7 @@ Accuracy = (TP + TN) / (TP + TN + FP + FN)
 | Moderate user content | Rekognition (images), Comprehend (text) |
 | Build recommendation engine | Personalize |
 | Low-confidence predictions | Augmented AI (human review) |
-| Gradient boosting on SageMaker | XGBoost (NOT LightGBM) |
+| Gradient boosting on tabular data | XGBoost |
 | Time series with confidence intervals | DeepAR |
 | Translate languages | Seq2Seq (custom) or Translate (pre-trained) |
 | Find objects in images | Object Detection |
