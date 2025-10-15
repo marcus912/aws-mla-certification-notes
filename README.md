@@ -34,7 +34,7 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 - [SageMaker Clarify](./sagemaker-clarify.md) - Bias & Explainability
 - [AWS ML Algorithms](./aws-ml-algorithms.md) - All 17 SageMaker built-in algorithms
 - [AWS AI Services](./aws-ai-services.md) - Comprehend, Rekognition, Lex, Textract, Kendra, etc.
-- [Data Services](./data-services.md) - S3, Glue, Athena, EMR, Kinesis, Ground Truth
+- [Data Services](./data-services.md) - S3, Glue, Athena, EMR, Kinesis, Lake Formation, Ground Truth
 - [MLOps & Deployment](./mlops-deployment.md) - Endpoints, monitoring, CI/CD
 
 ### Quick References
@@ -62,7 +62,7 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 - [ ] Specialized (A2I, Lookout, Fraud Detector, Q)
 
 ### Data & MLOps
-- [ ] Data Services (S3, Glue, Athena, EMR, Kinesis, Ground Truth)
+- [ ] Data Services (S3, Glue, Athena, EMR, Kinesis, Lake Formation, Ground Truth)
 - [ ] MLOps & Deployment (Endpoints, Model Monitor, Pipelines)
 
 ## Tags
@@ -75,7 +75,7 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 ## 📊 Repository Stats
 
 - **Total Notes:** 13 comprehensive markdown files
-- **Total Lines:** 3,278 lines of exam-focused content
+- **Total Lines:** 3,485 lines of exam-focused content
 - **Coverage:** All 4 AWS MLA exam domains (100%)
 - **Algorithms Covered:** 17 SageMaker built-in algorithms
   - Supervised: Linear Learner, XGBoost, KNN, Factorization Machines
@@ -87,8 +87,9 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 - **Services Covered:** 25+ AWS ML/AI services
   - 16 AI Services (Comprehend, Rekognition, Lex, Textract, etc.)
   - SageMaker ecosystem (Training, Clarify, Ground Truth, Pipelines)
-  - Data services (S3, Glue, Athena, EMR, Kinesis, Redshift)
-- **Exam Tips:** 118 `#exam-tip` tags throughout
+  - Data services (S3, Glue, Athena, EMR, Kinesis, Redshift, Lake Formation)
+  - Data Lakes (Lake Formation: column/row security, LF-Tags, permissions)
+- **Exam Tips:** 128 `#exam-tip` tags throughout
 - **Study Time:** 10-week suggested plan in study guide
 
 ## 🤝 Contributing

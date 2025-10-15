@@ -27,6 +27,9 @@
 | AI coding assistant | Q Developer |
 | Data labeling | Ground Truth |
 | Feature storage | Feature Store |
+| Secure data lake (column/row security) | Lake Formation |
+| Raw data storage for ML | S3 (Data Lake) |
+| Structured BI/analytics | Redshift (Data Warehouse) |
 
 ## SageMaker Built-in Algorithm Selection
 
@@ -157,6 +160,12 @@ Accuracy = (TP + TN) / (TP + TN + FP + FN)
 | Pixel-level segmentation | Semantic Segmentation |
 | Account takeover detection | IP Insights |
 | Topic discovery in documents | LDA or NTM |
+| Column-level data security | Lake Formation (column permissions) |
+| Row-level data filtering | Lake Formation (row-level security) |
+| Tag-based data permissions | Lake Formation (LF-Tags) |
+| Cross-account data sharing | Lake Formation |
+| Store raw data for ML | S3 Data Lake |
+| Structured BI reporting | Redshift (Data Warehouse) |
 
 ## Quick AI Service Selection `#exam-tip`
 
