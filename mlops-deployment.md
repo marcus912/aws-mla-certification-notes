@@ -77,7 +77,7 @@ ML Operations (MLOps) - practices for deploying, monitoring, and maintaining ML 
 | **Scaling** | Manual/Auto | N/A (single job) | Automatic (to zero) |
 | **Idle cost** | $$$ (full cost) | $0 | $0 |
 | **Traffic pattern** | Continuous | Scheduled batch | Sporadic |
-| **Max payload** | 6MB | Unlimited | 4MB |
+| **Max payload** | 25MB | Unlimited | 4MB |
 
 ## Model Registry & Versioning `#important`
 
