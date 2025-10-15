@@ -165,11 +165,108 @@ Fully managed ML service for building, training, and deploying models at scale.
 **Training Jobs**
 - Specify algorithm, compute resources, data location
 - **Input modes:** File, Pipe (streaming)
-- **Instance types:** ml.m5, ml.p3 (GPU), ml.p4d
+
+#### Instance Types for Training `#exam-tip`
+
+**General Purpose (M Family)**
+- **ml.m5**, **ml.m6i** - Balanced CPU/memory
+- **vCPUs:** 2-96, **Memory:** 8-384 GB
+- **Use cases:**
+  - Small to medium datasets
+  - Classical ML (XGBoost, Linear Learner)
+  - Prototyping and development
+  - Cost-effective baseline
+- **When to use:** Tabular data, tree-based models, don't need GPU
+
+**Compute Optimized (C Family)**
+- **ml.c5**, **ml.c6i** - High CPU performance
+- **vCPUs:** 2-96, **Memory:** 4-192 GB
+- **Use cases:**
+  - CPU-intensive algorithms
+  - Batch transform with high throughput
+  - Inference with CPU
+- **When to use:** Need high CPU but not GPU, cost-conscious
+
+**GPU Training (P Family)** `#important`
+- **ml.p3** - NVIDIA Tesla V100 GPUs
+  - **GPUs:** 1-8 per instance
+  - **GPU Memory:** 16 GB per GPU
+  - **Use cases:** Deep learning training (CNNs, RNNs, Transformers)
+  - **Best for:** Computer vision, NLP, large neural networks
+
+- **ml.p4d** - NVIDIA A100 GPUs (most powerful)
+  - **GPUs:** 8 per instance
+  - **GPU Memory:** 40 GB per GPU
+  - **Use cases:** Large-scale training, distributed training
+  - **Best for:** Huge models (GPT-like), fastest training
+  - **Cost:** Most expensive (use for production, not experiments)
+
+- **ml.p4de** - NVIDIA A100 GPUs with 80 GB memory
+  - **Best for:** Extremely large models with huge memory needs
+
+**GPU Training (G Family)**
+- **ml.g4dn** - NVIDIA T4 GPUs
+  - **GPUs:** 1-8 per instance
+  - **GPU Memory:** 16 GB per GPU
+  - **Use cases:** Cost-effective GPU training, mixed training/inference
+  - **Best for:** Medium-sized models, budget-conscious GPU needs
+  - **Trade-off:** Slower than P3 but cheaper
+
+- **ml.g5** - NVIDIA A10G GPUs
+  - **Best for:** Balance between cost and performance
+
+**Accelerated Computing (Inf/Trn Family)** `#exam-tip`
+- **ml.inf1** - AWS Inferentia chips
+  - **Purpose:** Cost-optimized inference (not training)
+  - **Use cases:** Deploy models for inference only
+  - **Best for:** High-throughput inference workloads
+
+- **ml.trn1** - AWS Trainium chips
+  - **Purpose:** Cost-optimized training
+  - **Use cases:** Train deep learning models at lower cost than P3/P4
+  - **Best for:** Large-scale training with cost optimization
+
+**Instance Type Selection Guide:** `#exam-tip`
+
+| Workload | Instance Type | Reason |
+|----------|---------------|--------|
+| Tabular data (XGBoost, Linear Learner) | **ml.m5** | No GPU needed, balanced resources |
+| Small neural network prototyping | **ml.g4dn** | Cost-effective GPU |
+| Large image classification training | **ml.p3** | V100 GPUs for deep learning |
+| Huge transformer models | **ml.p4d** | A100 GPUs, most powerful |
+| Cost-sensitive GPU training | **ml.g4dn** or **ml.trn1** | Lower cost than P3 |
+| CPU-only inference | **ml.c5** or **ml.m5** | No GPU overhead |
+| High-throughput inference | **ml.inf1** | AWS Inferentia optimized |
+| Distributed training (multi-GPU) | **ml.p3.8xlarge** or **ml.p4d.24xlarge** | 8 GPUs per instance |
+
+**Key Exam Concepts:** `#exam-tip`
+1. **GPU vs CPU:**
+   - Deep learning (CNNs, RNNs) → GPU (P3, G4dn)
+   - Classical ML (XGBoost, trees) → CPU (M5, C5)
+
+2. **Training vs Inference:**
+   - Training: P3, P4d (high performance)
+   - Inference: G4dn, Inf1, C5 (cost-optimized)
+
+3. **Cost Optimization:**
+   - Cheapest GPU: G4dn (T4)
+   - Fastest: P4d (A100)
+   - Balance: P3 (V100)
+   - CPU: M5 (general), C5 (compute-heavy)
+
+4. **When to use each:**
+   - **M5:** Default for non-GPU workloads
+   - **C5:** CPU-intensive, need more CPU than memory
+   - **P3:** Standard GPU training (most common exam answer)
+   - **P4d:** Largest models, distributed training
+   - **G4dn:** Budget GPU training/inference
+   - **Inf1:** High-volume inference only
 
 **Managed Spot Training** `#exam-tip`
 - Up to 90% cost savings
 - Use checkpoints for interruption handling
+- Works with any instance type
+- **Best practice:** Use for training, not inference
 
 **Automatic Model Tuning (Hyperparameter Optimization)**
 - Bayesian optimization

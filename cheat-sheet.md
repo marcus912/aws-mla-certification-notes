@@ -74,16 +74,50 @@
 | Seq2Seq | RecordIO-protobuf, JSON |
 | Object2Vec | JSON |
 
-## Instance Type Selection
+## Instance Type Selection `#exam-tip`
 
-| Use Case | Instance Type |
-|----------|---------------|
-| General purpose training | ml.m5.* |
-| GPU training (deep learning) | ml.p3.*, ml.p4d.* |
-| Large-scale training | ml.p4d.24xlarge |
-| Inference (CPU) | ml.c5.*, ml.m5.* |
-| Inference (GPU) | ml.g4dn.*, ml.p3.* |
-| Cost optimization | Spot instances (90% savings) |
+### Training Instance Types
+
+| Instance Family | Type | GPU | Best For | Cost |
+|-----------------|------|-----|----------|------|
+| **M (General)** | ml.m5, ml.m6i | No | Tabular data, XGBoost, prototyping | $ |
+| **C (Compute)** | ml.c5, ml.c6i | No | CPU-intensive, high throughput | $ |
+| **P3 (GPU)** | ml.p3 | NVIDIA V100 | Deep learning training (standard) | $$$ |
+| **P4d (GPU)** | ml.p4d | NVIDIA A100 | Large models, distributed training | $$$$ |
+| **G4dn (GPU)** | ml.g4dn | NVIDIA T4 | Cost-effective GPU training | $$ |
+| **G5 (GPU)** | ml.g5 | NVIDIA A10G | Balance cost/performance | $$$ |
+| **Trn1 (AWS)** | ml.trn1 | Trainium | Cost-optimized DL training | $$ |
+
+### Inference Instance Types
+
+| Instance Family | Type | GPU | Best For | Cost |
+|-----------------|------|-----|----------|------|
+| **M (General)** | ml.m5 | No | CPU inference, small models | $ |
+| **C (Compute)** | ml.c5 | No | High-throughput CPU inference | $ |
+| **G4dn (GPU)** | ml.g4dn | NVIDIA T4 | GPU inference, cost-effective | $$ |
+| **P3 (GPU)** | ml.p3 | NVIDIA V100 | Low-latency GPU inference | $$$ |
+| **Inf1 (AWS)** | ml.inf1 | Inferentia | High-throughput inference | $$ |
+
+### Quick Selection Guide
+
+| Scenario | Choose |
+|----------|--------|
+| Train XGBoost/Linear Learner on tabular data | ml.m5 |
+| Train CNN/RNN (image/text) | ml.p3 |
+| Train huge transformer model | ml.p4d |
+| Cost-sensitive GPU training | ml.g4dn or ml.trn1 |
+| CPU inference | ml.c5 or ml.m5 |
+| GPU inference (cost-optimized) | ml.g4dn or ml.inf1 |
+| Distributed multi-GPU training | ml.p3.8xlarge or ml.p4d.24xlarge |
+| Spot training (90% savings) | Any instance + Managed Spot |
+
+### Key Rules `#exam-tip`
+- **Deep Learning (CNNs, RNNs, Transformers)** → GPU (P3, P4d, G4dn)
+- **Classical ML (XGBoost, Random Forest, Linear)** → CPU (M5, C5)
+- **Training:** Use P-family (P3/P4d) or G4dn for GPU
+- **Inference:** Use cheaper options (C5, M5, G4dn, Inf1)
+- **Cost optimization:** G4dn (cheapest GPU) or Spot instances
+- **Fastest training:** P4d (A100 GPUs)
 
 ## Key Formulas
 
@@ -166,6 +200,11 @@ Accuracy = (TP + TN) / (TP + TN + FP + FN)
 | Cross-account data sharing | Lake Formation |
 | Store raw data for ML | S3 Data Lake |
 | Structured BI reporting | Redshift (Data Warehouse) |
+| Train deep learning model (CNN) | ml.p3 (GPU instances) |
+| Train XGBoost on tabular data | ml.m5 (CPU instances) |
+| Cost-effective GPU training | ml.g4dn (T4 GPU) |
+| Fastest deep learning training | ml.p4d (A100 GPU) |
+| High-throughput inference | ml.inf1 (Inferentia) or ml.c5 |
 
 ## Quick AI Service Selection `#exam-tip`
 
