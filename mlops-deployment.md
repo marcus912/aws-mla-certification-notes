@@ -118,6 +118,216 @@ ML Operations (MLOps) - practices for deploying, monitoring, and maintaining ML 
 - Don't want to pay for idle time
 - Development/testing environments
 
+## Experiment Tracking & Versioning `#important`
+
+### SageMaker Experiments `#exam-tip`
+
+**Purpose:** Track, organize, and compare machine learning experiments systematically.
+
+**Key Concept:** Helps answer "Which hyperparameters produced the best model?" by organizing all training runs.
+
+#### Hierarchy Structure
+
+```
+Experiment
+  └── Trial (Training Run 1)
+      ├── Trial Component (Training)
+      ├── Trial Component (Processing)
+      └── Trial Component (Evaluation)
+  └── Trial (Training Run 2)
+      └── ...
+```
+
+**Definitions:**
+- **Experiment:** High-level container for related trials (e.g., "fraud-detection-model-v2")
+- **Trial:** Single training run with specific hyperparameters (e.g., "learning-rate-0.01-run")
+- **Trial Component:** Individual step within a trial (training job, processing job, transform job)
+
+**What Gets Tracked Automatically:** `#important`
+- **Hyperparameters:** All training parameters
+- **Metrics:** Training/validation metrics over time (loss, accuracy, AUC)
+- **Input data:** S3 paths to training/validation datasets
+- **Output artifacts:** Model location, checkpoints
+- **Code:** Git commit hash, entry point script
+- **Instance info:** Instance type, instance count
+- **Duration:** Start time, end time, training duration
+- **Status:** InProgress, Completed, Failed
+
+#### How It Works
+
+**Automatic Tracking (Recommended):** `#exam-tip`
+```python
+from sagemaker.experiments import Run
+
+# Create experiment (once)
+experiment_name = "fraud-detection-experiment"
+
+# Each training run creates a trial
+with Run(
+    experiment_name=experiment_name,
+    run_name="lr-0.01-batch-128",
+    sagemaker_session=session
+) as run:
+    # Training happens here
+    estimator.fit(inputs)
+
+    # Metrics automatically captured
+    # Hyperparameters automatically logged
+```
+
+**SageMaker automatically creates:**
+- Experiment (if doesn't exist)
+- Trial for this run
+- Trial components for training job
+- Links all metadata
+
+**Manual Tracking (Custom Metrics):**
+```python
+# Log custom metrics during training
+run.log_metric(name="custom_f1_score", value=0.923)
+run.log_parameter(name="feature_count", value=150)
+run.log_artifact(name="confusion_matrix.png", value="s3://bucket/cm.png")
+```
+
+#### Key Features
+
+**1. Comparison and Visualization** `#exam-tip`
+
+**SageMaker Studio provides:**
+- **Leaderboard view:** Rank all trials by metric (e.g., sort by validation:auc)
+- **Parallel coordinates plot:** See hyperparameter effects visually
+- **Time series charts:** Compare training curves across trials
+- **Scatter plots:** Hyperparameter vs metric relationship
+
+**Use case:** "Which learning rate gave best validation AUC?"
+- Filter all trials by metric validation:auc
+- Sort descending
+- See top trial's hyperparameters instantly
+
+**2. Lineage Tracking**
+
+**Tracks complete data flow:** `#important`
+- Input datasets → Processing jobs → Training jobs → Models → Endpoints
+- **Forward tracking:** "Which endpoints use this dataset?"
+- **Backward tracking:** "Which data created this model?"
+
+**Compliance benefit:** Audit trail for regulatory requirements (GDPR, HIPAA)
+
+**3. Search and Filter**
+
+**Search capabilities:**
+- Find trials by hyperparameter values
+- Filter by metric thresholds (e.g., "AUC > 0.90")
+- Search by date range
+- Filter by status (Completed, Failed)
+
+**Example queries:**
+- "All trials with learning_rate < 0.01"
+- "Trials from last week with F1 > 0.85"
+- "Failed trials to debug"
+
+**4. Integration with Other Services** `#exam-tip`
+
+**Works with:**
+- **SageMaker Training Jobs** - Automatic trial creation
+- **SageMaker Processing Jobs** - Track data preprocessing
+- **SageMaker Autopilot** - All AutoML trials captured
+- **SageMaker Pipelines** - Link pipeline executions to experiments
+- **Model Registry** - Connect best trial to registered model
+
+#### Use Cases `#exam-tip`
+
+**1. Hyperparameter Tuning Analysis**
+- **Problem:** Ran 50 HPO jobs, need to understand which parameters matter
+- **Solution:** SageMaker Experiments tracks all 50 trials
+- **Benefit:** Visualize learning_rate vs accuracy, see patterns
+
+**2. Team Collaboration**
+- **Problem:** Multiple data scientists training models, need to share results
+- **Solution:** All trials in shared experiment, team sees all results
+- **Benefit:** Avoid duplicate work, build on best results
+
+**3. Model Reproducibility**
+- **Problem:** Model from 3 months ago, need exact configuration
+- **Solution:** Experiments captured code, data, hyperparameters
+- **Benefit:** Re-create exact model for compliance/debugging
+
+**4. A/B Testing History**
+- **Problem:** Testing multiple model versions in production
+- **Solution:** Link production variants to experiment trials
+- **Benefit:** Trace production model back to training run
+
+**5. Audit and Compliance**
+- **Problem:** Regulatory requirement to show model development process
+- **Solution:** Experiments provide complete lineage and audit trail
+- **Benefit:** Pass audits, demonstrate due diligence
+
+#### Best Practices `#exam-tip`
+
+**1. Naming Conventions**
+```
+Experiment: {project}-{model-type}-{version}
+Example: "fraud-detection-xgboost-v2"
+
+Trial: {hyperparams-summary}-{date}
+Example: "lr-0.01-depth-5-2025-01-15"
+```
+
+**2. Metric Logging**
+- **Log validation metrics** (not just training) - Use for comparison
+- **Log business metrics** if relevant (e.g., cost per prediction)
+- **Use consistent naming** across trials (e.g., always "val_auc", not sometimes "validation_auc")
+
+**3. Organization**
+- **One experiment per model type/problem**
+- **New experiment for major changes** (new algorithm, new features)
+- **Group related trials** (e.g., all hyperparameter tuning trials)
+
+**4. Cleanup**
+- **Archive old experiments** after model deployment
+- **Delete failed trials** after debugging (reduce clutter)
+- **Keep production model trials** indefinitely for audit
+
+#### Experiments vs Model Registry `#exam-tip`
+
+**Key Difference:**
+
+| Aspect | SageMaker Experiments | Model Registry |
+|--------|----------------------|----------------|
+| **Purpose** | Track all training runs | Catalog production-ready models |
+| **Scope** | Development phase | Deployment phase |
+| **Content** | All trials (good and bad) | Only approved models |
+| **When** | During experimentation | After model finalized |
+| **Metrics** | Training/validation metrics | Production performance metrics |
+| **Approval** | No approval workflow | Approval workflow (Pending/Approved/Rejected) |
+
+**Workflow:** `#important`
+1. **Experiments:** Run 100 trials, track all metrics
+2. **Select best:** Trial #47 has best validation AUC
+3. **Register:** Create model package in Model Registry from Trial #47
+4. **Approve:** Model Registry approves for production
+5. **Deploy:** Deploy approved model to endpoint
+6. **Link back:** Can trace production model back to Trial #47 in Experiments
+
+**Exam Scenario:** `#exam-tip`
+- **"Track multiple training runs?"** → SageMaker Experiments
+- **"Organize production models?"** → Model Registry
+- **"Compare hyperparameter combinations?"** → SageMaker Experiments
+- **"Approval workflow before deployment?"** → Model Registry
+
+#### Pricing `#exam-tip`
+
+**SageMaker Experiments is FREE**
+- No additional charge beyond training costs
+- Storage costs for metrics/metadata (minimal, fractions of a cent)
+- **Exam note:** Cost-free way to improve ML workflow
+
+#### Limitations
+
+- **Max 50,000 trials per experiment** (very high, rarely hit)
+- **Metrics logged every 5 seconds minimum** (prevent spam)
+- **Artifact size limit:** 5GB per trial component
+
 ## Model Registry & Versioning `#important`
 
 ### SageMaker Model Registry
