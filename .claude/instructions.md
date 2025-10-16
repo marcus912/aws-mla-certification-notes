@@ -13,6 +13,26 @@ This project contains study notes for the AWS Machine Learning Associate (MLA) c
 - You may run `git status` or `git diff` to show changes
 - User will commit and push when ready
 
+### 0.5. README.md Update Rule `#critical`
+**MANDATORY: After ANY content update, you MUST review and update README.md**
+
+When you modify any content file (.md except README.md and TEMPLATE.md):
+1. **Count total lines** - Run: `ls *.md | grep -v README.md | grep -v TEMPLATE.md | xargs wc -l`
+2. **Count exam tips** - Run: `ls *.md | grep -v README.md | grep -v TEMPLATE.md | xargs grep -o '#exam-tip' | wc -l`
+3. **Update README.md stats** - Update "Total Lines" and "Exam Tips" in Repository Stats section
+4. **Update structure** - If you added/removed files, update the Structure section
+5. **Update coverage** - If you added new algorithms/services, update the coverage lists
+
+**This is NOT optional** - README.md must always reflect the current state of the repository.
+
+**Example workflow:**
+- User: "Add notes about X"
+- AI: Updates relevant .md file
+- AI: **MUST run line count and update README.md**
+- AI: Presents all changes together
+
+**Exception:** Only skip README.md update if you're ONLY reading files or answering questions without modifying content.
+
 ### 1. Note Style & Format
 - **Always use Markdown format** (.md files)
 - **Keep notes brief and scannable** - Use bullet points, tables, and short paragraphs
@@ -92,7 +112,7 @@ When user provides keywords or topics:
 - **Don't create redundant files** - Consolidate related topics
 - **Use descriptive filenames** - kebab-case, clear purpose (e.g., `sagemaker-clarify.md`)
 - **Keep TEMPLATE.md updated** - Reflect any structural changes
-- **Maintain README.md** - Always keep the index current
+- **Maintain README.md** - **See Rule 0.5** - MUST update after every content change
 - **Update cheat-sheet.md** - Add new concepts to quick reference
 
 ## Content Priorities (High to Low)
@@ -130,8 +150,9 @@ When user provides keywords or topics:
 2. Determine best location for content
 3. Create or update appropriate file(s)
 4. Add cross-references
-5. Update README.md and cheat-sheet.md
-6. Confirm changes to user with file locations
+5. **MANDATORY: Count lines and exam tips, update README.md (Rule 0.5)**
+6. Update cheat-sheet.md if needed
+7. Confirm changes to user with file locations and updated stats
 
 ### When user asks: "Explain [concept]"
 1. Check if concept exists in notes
@@ -213,7 +234,7 @@ Before finalizing any note update, ensure:
 - [ ] Exam tips highlighted
 - [ ] Tables used for comparisons
 - [ ] Code blocks for technical content
-- [ ] README.md updated (if new file)
+- [ ] **README.md updated (MANDATORY - see Rule 0.5)** - Line count, exam tips, structure
 - [ ] cheat-sheet.md updated (if new concept)
 - [ ] No duplicate content across files
 - [ ] Markdown formatted correctly
