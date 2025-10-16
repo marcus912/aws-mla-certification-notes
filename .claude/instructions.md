@@ -115,6 +115,131 @@ When user provides keywords or topics:
 - **Maintain README.md** - **See Rule 0.5** - MUST update after every content change
 - **Update cheat-sheet.md** - Add new concepts to quick reference
 
+### 11. Autonomous Content Reorganization `#important`
+
+**You HAVE PERMISSION to reorganize notes proactively** when it improves clarity and structure.
+
+#### When to Reorganize (Do it proactively)
+
+**Create new note files when:**
+- A topic within a note grows beyond 200 lines and deserves its own file
+- New AWS service/concept needs dedicated coverage
+- Multiple files reference the same complex concept repeatedly
+- Content becomes too diverse for current file (e.g., mixing algorithms with deployment)
+
+**Rename note files when:**
+- Current name no longer reflects the content (e.g., file grew to cover more topics)
+- Better name improves discoverability
+- Aligns better with AWS official terminology
+
+**Move content between notes when:**
+- Content is in wrong file based on topic/domain
+- Better logical grouping improves learning flow
+- Reduces duplication across files
+- New terminology makes old organization obsolete
+
+**Split existing notes when:**
+- File exceeds 500 lines
+- Contains 3+ distinct major topics
+- Difficult to navigate or find specific information
+- New topics make current file scope too broad
+
+#### Reorganization Process
+
+**For MINOR changes (no new files):**
+1. **Just do it** - Move content, update cross-references
+2. Update README.md (Rule 0.5)
+3. Inform user of changes: "Reorganized X content from A to B for better clarity"
+
+**For MAJOR changes (new files, renames, splits):**
+1. **Announce intent first** - "I'm creating a new file X because..." or "I'm splitting A into A and B because..."
+2. Execute the reorganization
+3. **Ensure no content loss** - Verify all content moved successfully
+4. **Update all cross-references** - Fix links in all affected files
+5. **Update README.md** - Add new files to Structure section
+6. **Update cheat-sheet.md** - Adjust references if needed
+7. **Summarize changes** - List all files created/renamed/modified
+
+#### Required Actions After Reorganization
+
+**Always do:**
+- [ ] Search and replace all cross-reference links (use Grep tool)
+- [ ] Update "Related Topics" sections in all affected files
+- [ ] Update README.md Structure section
+- [ ] Update README.md stats (line count, file count)
+- [ ] Verify no broken links remain
+- [ ] Ensure consistent tagging across reorganized content
+
+**Never do:**
+- ❌ Delete content without moving it elsewhere
+- ❌ Rename files without updating cross-references
+- ❌ Create files that duplicate existing content
+- ❌ Reorganize without updating README.md
+
+#### Examples of Good Reorganization
+
+**Example 1: Creating new file**
+```
+Situation: sagemaker.md has 600 lines, including 150 lines on SageMaker Pipelines
+Action: Create mlops-pipelines.md, move Pipelines content there
+Rationale: MLOps deserves dedicated file, sagemaker.md more focused on training
+Update: Fix cross-references, update README.md structure
+```
+
+**Example 2: Moving content**
+```
+Situation: Regularization concepts scattered across 3 files
+Action: Consolidate all regularization content into model-training-evaluation.md
+Rationale: Single source of truth for regularization concepts
+Update: Remove from other files, add cross-references
+```
+
+**Example 3: Splitting file**
+```
+Situation: aws-ai-services.md is 800 lines covering 16 services
+Action: Split into:
+  - aws-ai-services-nlp.md (NLP services)
+  - aws-ai-services-vision.md (Vision services)
+  - aws-ai-services-other.md (Remaining services)
+Rationale: Easier navigation, grouped by use case
+Update: Create 3 files, update all cross-references, update README.md
+```
+
+**Example 4: Renaming file**
+```
+Situation: deployment.md now covers MLOps topics beyond just deployment
+Action: Rename deployment.md → mlops-deployment.md
+Rationale: Name better reflects expanded scope
+Update: Search all files for "deployment.md" links, replace with "mlops-deployment.md"
+```
+
+#### Decision Framework
+
+**Ask yourself:**
+- Will this make finding information easier?
+- Does this reduce duplication?
+- Is the new structure more logical for exam preparation?
+- Are file sizes becoming unwieldy (>500 lines)?
+- Would AWS documentation structure it this way?
+
+If YES to 2+ questions → Reorganize proactively
+
+If unsure → Propose to user first: "I suggest reorganizing X because Y. Proceed?"
+
+#### Triggers for Reorganization
+
+**Automatic triggers (reorganize immediately):**
+- User adds new topic that doesn't fit existing files cleanly
+- File exceeds 500 lines
+- Same content appears in 3+ files
+- User explicitly requests reorganization
+
+**Consider reorganization when:**
+- Adding 100+ lines of new content
+- Creating new major section in existing file
+- User asks "where should I find X?" (discoverability issue)
+- Cross-references become complex web
+
 ## Content Priorities (High to Low)
 
 ### Must Include (Critical for Exam)
@@ -148,11 +273,15 @@ When user provides keywords or topics:
 ### When user asks: "Add notes about [keyword]"
 1. Read existing related files
 2. Determine best location for content
-3. Create or update appropriate file(s)
-4. Add cross-references
-5. **MANDATORY: Count lines and exam tips, update README.md (Rule 0.5)**
-6. Update cheat-sheet.md if needed
-7. Confirm changes to user with file locations and updated stats
+3. **Check if reorganization needed (Rule 11):**
+   - Would new content exceed 500 lines in target file? → Consider split
+   - Does keyword deserve its own file? → Create new file
+   - Is content scattered across files? → Consolidate first
+4. Create or update appropriate file(s)
+5. Add cross-references
+6. **MANDATORY: Count lines and exam tips, update README.md (Rule 0.5)**
+7. Update cheat-sheet.md if needed
+8. Confirm changes to user with file locations and updated stats
 
 ### When user asks: "Explain [concept]"
 1. Check if concept exists in notes
@@ -162,12 +291,16 @@ When user provides keywords or topics:
 5. Use examples and comparisons
 
 ### When user asks: "Reorganize notes"
-1. Read all existing files
-2. Identify overlaps and gaps
-3. Propose reorganization plan
-4. Execute with user approval
-5. Ensure no content is lost
-6. Update all cross-references
+**Follow Rule 11 (Autonomous Content Reorganization)**
+1. Read all existing files to assess current structure
+2. Identify overlaps, gaps, and improvement opportunities
+3. For MAJOR changes: Announce reorganization plan first
+4. For MINOR changes: Execute immediately
+5. Execute reorganization (create/rename/move/split as needed)
+6. Update all cross-references (use Grep to find all links)
+7. Update README.md structure and stats (Rule 0.5)
+8. Verify no content lost, no broken links
+9. Summarize all changes to user
 
 ## Examples of Good vs Bad Content
 
@@ -238,10 +371,12 @@ Before finalizing any note update, ensure:
 - [ ] cheat-sheet.md updated (if new concept)
 - [ ] No duplicate content across files
 - [ ] Markdown formatted correctly
+- [ ] **File organization optimal (Rule 11)** - No files >500 lines, content in logical places
 
 ## Continuous Improvement
 
 As the project evolves:
+- **Proactively reorganize** per Rule 11 when structure can be improved
 - Consolidate fragmented information
 - Remove outdated content
 - Enhance cross-referencing
@@ -249,6 +384,7 @@ As the project evolves:
 - Improve visual structure (tables, formatting)
 - Keep aligned with latest AWS features
 - Refactor based on user feedback
+- Monitor file sizes (split when >500 lines)
 
 ---
 
