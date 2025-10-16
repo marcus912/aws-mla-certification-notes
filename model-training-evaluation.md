@@ -66,6 +66,76 @@ Techniques and best practices for training ML models and evaluating their perfor
 - **Goal:** Minimize total error = Bias² + Variance + Irreducible Error
 - **Sweet spot:** Balance between underfitting and overfitting
 
+## Loss Functions `#important`
+
+**Purpose:** Quantify how wrong a model's predictions are. Training optimizes (minimizes) the loss function.
+
+### Classification Loss Functions `#exam-tip`
+
+#### Binary Cross-Entropy (Log Loss)
+- **Use for:** Binary classification (2 classes)
+- **Formula:** `Loss = -[y·log(ŷ) + (1-y)·log(1-ŷ)]`
+- **Range:** 0 to ∞ (0 = perfect predictions)
+- **Mechanism:** Heavily penalizes confident wrong predictions
+- **AWS algorithms:** Linear Learner (binary_classifier), Neural Networks
+- **When prediction is wrong but confident:** Loss explodes (log approaches infinity)
+
+#### Categorical Cross-Entropy
+- **Use for:** Multi-class classification (3+ classes)
+- **Formula:** `Loss = -Σ(y_i · log(ŷ_i))` across all classes
+- **Requirement:** One-hot encoded labels
+- **AWS algorithms:** Linear Learner (multiclass_classifier), Image Classification
+- **Output layer:** Softmax activation (probabilities sum to 1)
+
+#### Hinge Loss
+- **Use for:** Support Vector Machines (SVM), binary classification
+- **Formula:** `Loss = max(0, 1 - y·ŷ)`
+- **Range:** 0 to ∞
+- **Characteristic:** Creates margin between classes
+- **Less common** in AWS built-in algorithms (XGBoost uses log loss)
+
+### Regression Loss Functions `#exam-tip`
+
+#### Mean Squared Error (MSE)
+- **Use for:** Regression tasks
+- **Formula:** `MSE = (1/n)·Σ(y - ŷ)²`
+- **Mechanism:** Squares errors → heavily penalizes large errors
+- **Pros:** Smooth, differentiable, emphasizes large errors
+- **Cons:** Sensitive to outliers (outliers get squared)
+- **AWS algorithms:** Linear Learner (regressor), XGBoost (regression)
+
+#### Mean Absolute Error (MAE)
+- **Use for:** Regression with outliers
+- **Formula:** `MAE = (1/n)·Σ|y - ŷ|`
+- **Mechanism:** Absolute value → treats all errors equally
+- **Pros:** Robust to outliers, easy to interpret
+- **Cons:** Not differentiable at zero (optimization harder)
+- **When to use:** Data has outliers, don't want them to dominate loss
+
+#### Huber Loss
+- **Use for:** Regression with some outliers (compromise)
+- **Mechanism:** MSE for small errors, MAE for large errors
+- **Pros:** Combines best of both (smooth + robust)
+- **Tunable:** Delta parameter controls transition point
+- **AWS:** Available in some algorithms (less common)
+
+### Loss Function Selection Guide `#exam-tip`
+
+| Problem Type | Loss Function | Reason |
+|--------------|---------------|--------|
+| Binary classification | Binary Cross-Entropy | Probabilistic outputs, penalizes confidence |
+| Multi-class classification | Categorical Cross-Entropy | Handles multiple classes with softmax |
+| Regression (normal data) | MSE | Emphasizes large errors, smooth optimization |
+| Regression (with outliers) | MAE | Robust to outliers, equal error treatment |
+| Regression (some outliers) | Huber Loss | Balanced approach |
+
+**Key Exam Concepts:** `#exam-tip`
+- **Cross-entropy for classification** (most common)
+- **MSE for regression** (AWS default for Linear Learner, XGBoost)
+- **Outliers present?** Use MAE instead of MSE
+- **Loss goes to zero** = Perfect predictions (rarely happens)
+- **Loss increasing during training?** Learning rate too high or model diverging
+
 ## Regularization `#important`
 
 **Purpose:** Prevent overfitting by adding penalty for model complexity
