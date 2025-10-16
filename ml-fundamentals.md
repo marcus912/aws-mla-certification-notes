@@ -26,6 +26,156 @@ Core ML concepts and terminology for the AWS MLA exam.
 - Agent learns through rewards/penalties
 - Use cases: Gaming, robotics, optimization
 
+## Ensemble Methods `#important` `#exam-tip`
+
+**Definition:** Combine multiple models to create a stronger predictor than any individual model.
+
+**Key Principle:** "Wisdom of the crowd" - diverse models make different errors, averaging reduces overall error.
+
+### Bagging (Bootstrap Aggregating) `#core`
+
+**Mechanism:** Train multiple models **in parallel** on different random subsets of data, then average predictions.
+
+**How it works:**
+1. Create multiple bootstrap samples (random sampling with replacement) from training data
+2. Train separate model on each sample (usually same algorithm, different data)
+3. **Aggregate predictions:**
+   - Classification: Majority vote
+   - Regression: Average predictions
+
+**Key characteristics:**
+- **Parallel training** - Models trained independently
+- **Reduces variance** - Averaging reduces overfitting
+- **Works best with:** High-variance models (deep decision trees)
+- **Doesn't reduce bias** - If base model is biased, averaging won't fix it
+
+**Example Algorithm: Random Forest**
+- Bagging with decision trees
+- Additional randomization: Each tree sees random subset of features
+- Result: Diverse trees that average to robust predictions
+
+**Advantages:**
+- ✅ Reduces overfitting (variance reduction)
+- ✅ Parallel training (fast on multiple cores)
+- ✅ Handles outliers well (averaging reduces impact)
+- ✅ Out-of-bag error estimation (free validation set)
+
+**Disadvantages:**
+- ❌ Doesn't reduce bias (can't fix underfitting)
+- ❌ Less interpretable (ensemble of many models)
+- ❌ More memory (stores multiple models)
+
+**When to use:** `#exam-tip`
+- Model is overfitting (high variance)
+- Have high-variance base learners (deep trees)
+- Want stability and robustness
+- Can train in parallel (have computational resources)
+
+### Boosting `#core` `#important`
+
+**Mechanism:** Train models **sequentially**, each focusing on errors from previous models.
+
+**How it works:**
+1. Train first model on original data
+2. Identify misclassified/poorly predicted samples
+3. Train second model, **giving more weight to errors from first model**
+4. Repeat: Each new model focuses on fixing previous mistakes
+5. **Combine predictions:** Weighted sum (better models get more weight)
+
+**Key characteristics:**
+- **Sequential training** - Models trained one after another
+- **Reduces bias AND variance** - Fixes underfitting and overfitting
+- **Works best with:** Weak learners (shallow decision trees)
+- **Adaptive** - Each model learns from previous errors
+
+**Common Boosting Algorithms:**
+
+#### AdaBoost (Adaptive Boosting)
+- **Reweights samples:** Increase weight of misclassified samples
+- **Model weights:** Better models get higher weight in ensemble
+- **Stopping:** Fixed number of models or perfect accuracy
+- **Sensitive to outliers** (gives them high weight)
+
+#### Gradient Boosting `#exam-tip`
+- **Fits residuals:** Each model predicts errors (residuals) from previous model
+- **Gradient descent:** Optimizes loss function by adding models
+- **More flexible:** Can optimize any differentiable loss function
+- **Less sensitive to outliers** than AdaBoost
+
+#### XGBoost (Extreme Gradient Boosting) `#important`
+- **AWS built-in algorithm** - Most important for exam!
+- Enhanced gradient boosting with:
+  - Regularization (L1/L2) to prevent overfitting
+  - Parallel tree construction (faster than standard gradient boosting)
+  - Handling missing values automatically
+  - Tree pruning (removes branches that don't improve performance)
+- **Default choice** for tabular data on AWS SageMaker
+- Wins most Kaggle competitions
+
+**Advantages:**
+- ✅ High accuracy (often best performer)
+- ✅ Reduces both bias and variance
+- ✅ Handles complex relationships
+- ✅ Feature importance built-in
+
+**Disadvantages:**
+- ❌ Sequential training (slower than bagging)
+- ❌ Prone to overfitting if not tuned (use early stopping)
+- ❌ Sensitive to hyperparameters (needs tuning)
+- ❌ Can overfit noisy data (AdaBoost especially)
+
+**When to use:** `#exam-tip`
+- Need highest accuracy
+- Have weak learners (shallow trees work well)
+- Want to reduce both bias and variance
+- Tabular/structured data (XGBoost excels here)
+- Have time for hyperparameter tuning
+
+### Bagging vs Boosting Comparison `#exam-tip`
+
+| Aspect | Bagging | Boosting |
+|--------|---------|----------|
+| **Training** | Parallel (independent) | Sequential (dependent) |
+| **Goal** | Reduce variance | Reduce bias AND variance |
+| **Weighting** | Equal weight for all samples | Higher weight for misclassified |
+| **Base learners** | High-variance (deep trees) | Low-variance (shallow trees/stumps) |
+| **Speed** | Fast (parallel) | Slower (sequential) |
+| **Overfitting risk** | Low (averaging reduces) | Higher (can overfit errors) |
+| **Example algorithm** | Random Forest | XGBoost, AdaBoost, Gradient Boosting |
+| **AWS algorithm** | Random Forest (not built-in) | **XGBoost** (built-in) `#important` |
+
+### Exam Decision Framework `#exam-tip`
+
+**Choose Bagging (Random Forest) when:**
+- Model is **overfitting** (high variance problem)
+- Need **parallel training** (fast results)
+- Want **stability** and robustness
+- Have **noisy data** with outliers
+
+**Choose Boosting (XGBoost) when:**
+- Need **highest accuracy** (most important)
+- Model is **underfitting** (high bias problem)
+- Have **tabular/structured data** (XGBoost best here)
+- Can afford **sequential training** time
+- **Default choice for AWS SageMaker** on tabular data
+
+**Key Exam Scenarios:**
+
+| Scenario | Solution | Reason |
+|----------|----------|--------|
+| "Best algorithm for tabular data classification?" | **XGBoost** | Boosting, AWS built-in, highest accuracy |
+| "Model overfitting, reduce variance?" | **Bagging/Random Forest** | Averaging reduces variance |
+| "Model underfitting, reduce bias?" | **Boosting/XGBoost** | Sequential learning reduces bias |
+| "Need fast parallel training?" | **Bagging** | Models train independently |
+| "Kaggle competition on structured data?" | **XGBoost** | Wins most competitions |
+| "Noisy data with outliers?" | **Bagging** | Averaging dampens outlier impact |
+
+### Stacking (Bonus Concept)
+
+**Brief mention:** Combines different types of models (e.g., XGBoost + Neural Net + SVM), uses another model to combine their predictions. More complex than bagging/boosting.
+- **Not commonly asked on exam**
+- **If mentioned:** Use multiple diverse algorithms, meta-learner combines them
+
 ## Model Performance Metrics
 
 ### Confusion Matrix `#core` `#exam-tip`
