@@ -46,11 +46,15 @@ Techniques and best practices for training ML models and evaluating their perfor
 
 **Definition:** Error from overly simplistic assumptions in the learning algorithm.
 
+**Mechanism:** Model makes strong assumptions about data shape/patterns, ignoring complexity
+
 - **High bias** → Model is too simple → **Underfitting**
-- Fails to capture patterns in data
-- Poor performance on both training and test data
-- **Example:** Using linear model for non-linear relationship
-- **Solution:** More complex model, more features, reduce regularization
+- **What happens:** Model has too few parameters or limited flexibility to fit data
+- Fails to capture true patterns (treats non-linear as linear, misses interactions)
+- Poor performance on both training and test data (model can't learn the pattern)
+- **Example:** Using linear model for quadratic relationship (y = x²)
+- **Visual:** Model draws straight line through curved data
+- **Solution:** More complex model, add polynomial features, reduce regularization, more layers (neural nets)
 
 ### Variance in Machine Learning
 - **High variance** → Model is too sensitive to training data → **Overfitting**
@@ -67,9 +71,11 @@ Techniques and best practices for training ML models and evaluating their perfor
 **Purpose:** Prevent overfitting by adding penalty for model complexity
 
 ### L1 Regularization (Lasso) `#exam-tip`
-- **How it works:** Adds penalty = λ × |weights|
-- **Effect:** Drives some weights to exactly zero → **Feature selection**
-- **Result:** Sparse models (few non-zero features)
+- **How it works:** Adds penalty = λ × |weights| (absolute value)
+- **Critical mechanism:** Forces weights to **EXACTLY zero** (complete elimination)
+- **Why zeros?** Absolute value penalty has sharp corner at zero, gradient "snaps" weights to zero
+- **Effect:** Automatic feature selection - removes features by zeroing their weights
+- **Result:** Sparse models (many weights = 0, only important features remain)
 - **When to use:**
   - Many features, want automatic feature selection
   - Interpretability important (fewer features)
@@ -77,13 +83,15 @@ Techniques and best practices for training ML models and evaluating their perfor
 - **AWS algorithms:** Linear Learner (`l1`), XGBoost (`alpha`)
 
 ### L2 Regularization (Ridge) `#exam-tip`
-- **How it works:** Adds penalty = λ × weights²
-- **Effect:** Shrinks weights toward zero but doesn't eliminate them
-- **Result:** All features kept but with reduced impact
+- **How it works:** Adds penalty = λ × weights² (squared)
+- **Critical mechanism:** Shrinks weights toward zero but **NEVER exactly zero** (approaches asymptotically)
+- **Why not zero?** Squared penalty gets gentler near zero, weights shrink but don't eliminate
+- **Effect:** All features kept but with reduced magnitude/impact
+- **Result:** Dense models (all features present, none eliminated)
 - **When to use:**
-  - Features are correlated
+  - Features are correlated (L2 keeps all, L1 randomly picks one)
   - Want to keep all features but reduce overfitting
-  - More stable than L1
+  - More stable than L1 (small data changes don't flip feature selection)
 - **AWS algorithms:** Linear Learner (`wd` = weight decay), XGBoost (`lambda`)
 
 ### Elastic Net
@@ -95,7 +103,8 @@ Techniques and best practices for training ML models and evaluating their perfor
 
 | Aspect | L1 (Lasso) | L2 (Ridge) | Elastic Net |
 |--------|-----------|-----------|-------------|
-| Feature selection | ✅ Yes (zeros out) | ❌ No (shrinks) | ✅ Yes |
+| **Weights become zero?** | ✅ **Yes - EXACTLY zero** | ❌ **No - approaches zero, never reaches** | ✅ Yes (from L1 component) |
+| Feature selection | ✅ Yes (eliminates features) | ❌ No (keeps all features) | ✅ Yes |
 | Handles correlated features | ❌ Picks one randomly | ✅ Yes, shrinks both | ✅ Yes |
 | Sparsity | ✅ Sparse model | ❌ Dense model | ⚠️ Some sparsity |
 | Stability | ⚠️ Less stable | ✅ More stable | ✅ Stable |
@@ -132,21 +141,22 @@ Techniques and best practices for training ML models and evaluating their perfor
 
 ### Feature Attribute Drift `#exam-tip`
 - **Definition:** Change in the **importance/ranking** of features over time
-- **Detection using NDCG (Normalized Discounted Cumulative Gain):**
-  - **NDCG** - Metric originally from information retrieval (search ranking quality)
-  - Measures how well feature rankings match between training and production
-  - **Formula:** Compares actual feature ranking vs ideal ranking
-  - **Score:** 0 to 1 (1 = perfect ranking match)
-  - **How it works:**
-    1. Rank features by importance during training (baseline)
-    2. Rank features by importance in production (current)
-    3. Calculate NDCG score comparing rankings
-    4. Low NDCG score → feature importance has shifted → potential drift
+- **What it means:** Features that were important during training become less important in production (or vice versa)
 - **Example:**
-  - Training: Most important features were [age, income, location]
-  - Production: Most important features became [location, age, credit_score]
-  - Feature ranking changed → model assumptions may be invalid
-- **Tool:** SageMaker Model Monitor can track feature attribute drift
+  - **Training:** Most important features were [age, income, location]
+  - **Production:** Most important features became [location, age, credit_score]
+  - **Problem:** "credit_score" wasn't important before, now it is → model assumptions may be invalid
+
+**Detection using NDCG (Normalized Discounted Cumulative Gain):**
+- **Key concept:** NDCG measures if feature rankings match between training and production
+- **Score range:** 0 to 1 (1 = perfect match, 0 = completely different)
+- **Mechanism:**
+  1. Rank features by importance during training (baseline ranking)
+  2. Rank features by importance in production (current ranking)
+  3. Compare rankings: Do the top features match? Are they in similar order?
+  4. **Low NDCG score** → rankings don't match → feature importance has shifted → drift detected
+- **Origin:** NDCG comes from search engine ranking (measures if search results are in right order)
+- **Tool:** SageMaker Model Monitor automatically tracks feature attribute drift using NDCG
 
 ### Prediction Drift
 - Model output distribution changes
@@ -189,13 +199,17 @@ Techniques and best practices for training ML models and evaluating their perfor
 #### Mini-Batch Size
 - **What:** Number of samples processed before updating model weights
 - **Small batches (32-128):**
-  - More frequent updates, noisier gradient
-  - Better generalization, more regularization effect
-  - Slower training per epoch
+  - More frequent updates, **noisier gradient** estimates
+  - **Regularization mechanism:** Noise prevents model from memorizing specific training patterns
+  - **Why it helps:** Each update based on small subset → variations force model to learn general patterns, not specifics
+  - Better generalization (natural regularization effect)
+  - Slower training per epoch (more updates needed)
 - **Large batches (512-2048):**
-  - Fewer updates, smoother gradient
-  - Faster training per epoch
-  - May overfit, needs more regularization
+  - Fewer updates, **smoother gradient** (averaged over many samples)
+  - **Less noise** → can overfit more easily (gradient points to training data specifics)
+  - Faster training per epoch (fewer weight updates)
+  - May overfit, needs explicit regularization (L1/L2)
+- **Trade-off:** Small batch = implicit regularization from noise, Large batch = speed but needs explicit regularization
 - **Algorithms:** Linear Learner, Neural Networks, XGBoost
 
 #### Number of Epochs

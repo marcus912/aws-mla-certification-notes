@@ -133,30 +133,31 @@ Accuracy = (TP + TN) / (TP + TN + FP + FN)
 
 ### Regularization (Prevent Overfitting)
 
-| Parameter | Algorithm | Effect | Use Case |
-|-----------|-----------|--------|----------|
-| `l1` | Linear Learner | Feature selection (zeros out) | Many features, want sparsity |
-| `wd` | Linear Learner | Shrink weights (L2) | Correlated features |
-| `alpha` | XGBoost | L1 regularization | Feature selection |
-| `lambda` | XGBoost | L2 regularization | Prevent overfitting |
+| Parameter | Algorithm | Mechanism | Effect | Use Case |
+|-----------|-----------|-----------|--------|----------|
+| `l1` | Linear Learner | Forces weights to EXACTLY zero | Feature selection (eliminates features) | Many features, want sparsity |
+| `wd` | Linear Learner | Shrinks toward zero (never reaches) | Keeps all features, reduces magnitude | Correlated features |
+| `alpha` | XGBoost | L1 penalty (absolute value) | Feature selection | Many features, want sparsity |
+| `lambda` | XGBoost | L2 penalty (squared) | Shrinks all weights smoothly | Prevent overfitting, stable models |
 
 ### Class Imbalance
 
-| Parameter | Algorithm | Purpose |
-|-----------|-----------|---------|
-| `balance_multiclass_weights` | Linear Learner | Auto-weight minority classes |
-| `scale_pos_weight` | XGBoost | Ratio of negative/positive |
-| `target_recall` | Linear Learner | Optimize for recall (fraud) |
-| `target_precision` | Linear Learner | Optimize for precision (spam) |
+| Parameter | Algorithm | Mechanism | When to Use |
+|-----------|-----------|-----------|-------------|
+| `balance_multiclass_weights` | Linear Learner | Auto-assigns higher weight to minority classes | Imbalanced classes (fraud, rare events) |
+| `scale_pos_weight` | XGBoost | Ratio of negative/positive samples | Binary imbalance (set to neg/pos ratio) |
+| `target_recall` | Linear Learner | Optimizes to catch all positives (tolerates false alarms) | Fraud/disease detection (can't miss positives) |
+| `target_precision` | Linear Learner | Optimizes to avoid false positives (may miss some) | Spam detection (false alarms costly) |
 
 ### Training Control
 
-| Parameter | Algorithms | Range | Effect |
-|-----------|-----------|-------|--------|
-| `learning_rate` / `eta` | Linear Learner, XGBoost | 0.001-0.3 | Convergence speed |
-| `mini_batch_size` | Linear Learner | 1-10000 | Training speed |
-| `max_depth` | XGBoost | 1-10+ | Tree complexity |
-| `num_round` | XGBoost | Varies | Number of trees |
+| Parameter | Algorithms | Range | Mechanism | Effect |
+|-----------|-----------|-------|-----------|--------|
+| `learning_rate` / `eta` | Linear Learner, XGBoost | 0.001-0.3 | Step size shrinkage for weight updates | Lower = slower, more robust, less overfitting |
+| `mini_batch_size` | Linear Learner | 1-10000 | Samples per weight update | Small = noisy gradient (regularization effect) |
+| `max_depth` | XGBoost | 1-10+ | Limits tree depth (# of levels) | Lower = simpler trees, less overfitting |
+| `num_round` | XGBoost | Varies | Number of boosting iterations | More rounds = more complex model |
+| `subsample` | XGBoost | 0-1 | Fraction of data per tree (stochastic boosting) | < 1 adds randomness, prevents overfitting |
 
 ### Cost Optimization Tips `#exam-tip`
 - Use Spot instances with checkpointing (90% savings)

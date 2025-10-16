@@ -24,8 +24,14 @@ ML Operations (MLOps) - practices for deploying, monitoring, and maintaining ML 
 **Deployment Options:**
 - **All-at-once** - Replace old model immediately (downtime risk)
 - **Blue/green** - Deploy new, switch traffic, rollback if needed
-- **Canary** - Route small % of traffic to new model, gradually increase
-- **A/B testing** - Split traffic between model variants
+- **Canary** - **Safety mechanism:** Route small % to new model, gradually increase if safe
+  - Purpose: **Risk mitigation** - Test new model on real traffic before full rollout
+  - Process: 5% → monitor → 25% → monitor → 50% → monitor → 100%
+  - Goal: Ensure new model doesn't break production
+- **A/B testing** - **Comparison mechanism:** Split traffic to compare model performance
+  - Purpose: **Decide which model is better** - Statistical comparison of variants
+  - Process: 50/50 split → collect metrics → choose winner
+  - Goal: Determine which model performs better (accuracy, latency, business metrics)
 
 **When to use:** `#exam-tip`
 - Real-time user requests (web, mobile apps)
@@ -52,32 +58,65 @@ ML Operations (MLOps) - practices for deploying, monitoring, and maintaining ML 
 ### SageMaker Serverless Inference `#exam-tip`
 **Purpose:** Auto-scaling inference without managing instances
 
+**⚠️ CRITICAL LIMITATIONS:** `#exam-tip`
+- **Max payload size: 4MB** - Any request > 4MB will fail
+- **Max timeout: 60 seconds** - Any inference > 60s will timeout
+- **Cold start latency:** First request after idle period is slower (seconds delay)
+
 **Characteristics:**
-- Scales to zero when not in use
+- Scales to zero when not in use (no idle cost)
 - Pay only for compute time used
-- Cold start latency (first request slower)
-- Max 4MB payload, 60s timeout
+- Auto-scales based on traffic
 
 **When to use:** `#exam-tip`
-- Intermittent traffic patterns
-- Unpredictable usage (long idle periods)
+- **Intermittent traffic** (hours/days between requests)
+- **Unpredictable usage** with long idle periods
+- **Small payloads** (< 4MB) and fast inference (< 60s)
 - Development/testing environments
 - Cost optimization for low-volume workloads
-- **Not for:** High-throughput, consistent traffic
 
-**Pricing:** Only pay for inference duration + memory allocated
+**When NOT to use:** `#exam-tip`
+- High-throughput, consistent traffic (use Endpoint instead)
+- Large payloads > 4MB (use Endpoint or Batch Transform)
+- Long inference times > 60s (use Endpoint or Batch Transform)
+- Latency-sensitive applications that can't tolerate cold starts
+
+**Pricing:** Only pay for inference duration + memory allocated (no idle cost)
 
 ### Deployment Comparison Table `#exam-tip`
 
 | Factor | Endpoint | Batch Transform | Serverless |
 |--------|----------|----------------|------------|
-| **Latency** | Low (ms) | High (minutes) | Medium (cold start) |
-| **Cost** | Always running | Only during job | Only during requests |
+| **Latency** | Low (ms) | High (minutes/hours) | Medium (cold start adds seconds) |
+| **Cost** | $$$ Always running | $ Only during job | $ Only during requests |
 | **Use case** | Real-time API | Large datasets | Intermittent traffic |
 | **Scaling** | Manual/Auto | N/A (single job) | Automatic (to zero) |
 | **Idle cost** | $$$ (full cost) | $0 | $0 |
-| **Traffic pattern** | Continuous | Scheduled batch | Sporadic |
-| **Max payload** | 25MB | Unlimited | 4MB |
+| **Traffic pattern** | Continuous/predictable | Scheduled batch | Sporadic/unpredictable |
+| **Max payload** | 25MB | Unlimited (S3-based) | **4MB (hard limit)** |
+| **Max timeout** | No limit | No limit | **60s (hard limit)** |
+| **Best for** | Production APIs | Offline scoring | Dev/test, low-volume |
+
+**Decision Framework:** `#exam-tip`
+
+**Choose Endpoint when:**
+- Need real-time responses (< 100ms latency)
+- Continuous traffic or predictable patterns
+- Can justify always-on cost
+- Need auto-scaling for variable load
+
+**Choose Batch Transform when:**
+- Processing millions of records
+- Predictions not needed immediately
+- Can run on schedule (daily, weekly)
+- Most cost-effective for large batches
+
+**Choose Serverless when:**
+- Intermittent traffic (hours/days between requests)
+- Can tolerate cold start latency (seconds)
+- **Payloads < 4MB AND inference < 60s**
+- Don't want to pay for idle time
+- Development/testing environments
 
 ## Model Registry & Versioning `#important`
 
@@ -153,15 +192,23 @@ ML Operations (MLOps) - practices for deploying, monitoring, and maintaining ML 
 
 #### 1. Data Quality Monitoring
 - **Detects:** Changes in input data distribution
-- **Metrics:** Feature statistics, missing values, data types
+- **Mechanism:** Compares production input features to training baseline (statistical comparison)
+- **NO LABELS REQUIRED** - Only looks at input data, not predictions or outcomes
+- **Immediate detection** - Identifies issues as soon as data arrives
+- **Metrics:** Feature statistics, missing values, data types, distributions
 - **Baseline:** Created from training data
-- **Alerts:** When production data deviates from baseline
+- **Alerts:** When production data deviates from baseline (before model even makes predictions)
 
-#### 2. Model Quality Monitoring
+#### 2. Model Quality Monitoring `#important`
 - **Detects:** Model prediction quality degradation
-- **Requires:** Ground truth labels (actual outcomes)
-- **Metrics:** Accuracy, precision, recall, AUC
-- **Use case:** Detect model drift over time
+- **Requires:** Ground truth labels (actual outcomes) - **these arrive LATER**
+- **Timing mechanism:** Model makes prediction now → Actual outcome known later (hours/days/weeks)
+- **Example:**
+  - Fraud detection: Predict fraud today → Investigate → Confirm fraud result 3 days later
+  - Customer churn: Predict churn in March → Wait 30 days → Know if customer actually churned in April
+- **Metrics:** Accuracy, precision, recall, AUC (calculated after ground truth arrives)
+- **Use case:** Detect model drift over time (requires patience for ground truth)
+- **Key difference from Data Quality:** Data Quality = immediate (no labels needed), Model Quality = delayed (labels required)
 
 #### 3. Bias Drift Monitoring
 - **Detects:** Changes in bias metrics over time
@@ -172,6 +219,23 @@ ML Operations (MLOps) - practices for deploying, monitoring, and maintaining ML 
 - **Detects:** Changes in feature importance
 - **Uses:** SHAP values
 - **Indicates:** Model behavior changes
+
+### Monitoring Types Comparison `#exam-tip`
+
+| Aspect | Data Quality | Model Quality |
+|--------|-------------|---------------|
+| **Labels required?** | ❌ No | ✅ Yes (ground truth) |
+| **Detection speed** | ⚡ Immediate | ⏳ Delayed (wait for labels) |
+| **What it monitors** | Input features only | Prediction accuracy |
+| **When to use** | Always (first line of defense) | When ground truth is available |
+| **Example alert** | "Age distribution has shifted" | "Accuracy dropped from 95% to 85%" |
+| **Cost** | Lower (no labels needed) | Higher (need label collection) |
+
+**Decision Framework:** `#exam-tip`
+- **If the question mentions "without labels"** → Data Quality Monitoring
+- **If the question asks about "model accuracy degradation"** → Model Quality Monitoring (needs labels)
+- **If immediate detection needed** → Data Quality Monitoring
+- **Best practice:** Use BOTH - Data Quality alerts you immediately, Model Quality confirms impact
 
 **How It Works:**
 1. Create baseline from training data

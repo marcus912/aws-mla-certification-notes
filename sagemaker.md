@@ -64,19 +64,33 @@ Fully managed ML service for building, training, and deploying models at scale.
   - **Alternative:** Use class weights, SMOTE (preprocessing)
 
 #### Optimization Objectives `#exam-tip`
+
+**Decision Framework:** Ask "What's the cost of being wrong?"
+
 - **`target_precision`**
   - Range: 0 to 1
   - **Unique to Linear Learner**
-  - Use when: Precision is critical (e.g., spam detection - don't want false positives)
+  - **Use when FALSE POSITIVES are costly** (wrongly predicting positive is bad)
+  - Trade-off: May miss some positives (lower recall) to avoid false alarms
+  - Examples:
+    - Spam detection (don't want good emails marked as spam)
+    - Medical test screening (don't want false cancer diagnoses)
+    - Product recommendations (don't want to annoy users with bad suggestions)
   - Model optimizes to achieve this precision target
 
 - **`target_recall`**
   - Range: 0 to 1
   - **Unique to Linear Learner**
-  - Use when: Recall is critical (e.g., fraud detection - don't want to miss fraud)
+  - **Use when FALSE NEGATIVES are costly** (missing positives is bad)
+  - Trade-off: May have more false alarms (lower precision) to catch all positives
+  - Examples:
+    - Fraud detection (must catch all fraud, false alarms are tolerable)
+    - Disease screening (can't miss any sick patients)
+    - Security threats (better to investigate false alarms than miss real threats)
   - Model optimizes to achieve this recall target
 
 - **Cannot set both:** Choose `target_precision` OR `target_recall`, not both
+- **Default:** If neither is set, optimizes for overall accuracy
 
 #### Predictor Type
 - **`predictor_type`**
@@ -90,13 +104,17 @@ Fully managed ML service for building, training, and deploying models at scale.
 - **`max_depth`**
   - Range: 1 to 10+
   - Default: 6
-  - Effect: Deeper trees = more complex model (overfitting risk)
+  - Mechanism: Limits how many levels deep each tree can grow
+  - Effect: Controls tree complexity (deeper = more splits = more overfitting risk)
+  - Lower value = simpler trees, less overfitting
 - **`num_round`**
   - Number of boosting rounds (trees to build)
   - More rounds = more complex model
 - **`min_child_weight`**
-  - Minimum sum of instance weight in a child
-  - Higher value = more conservative (prevent overfitting)
+  - Minimum sum of instance weight (# of samples) needed in a leaf node
+  - Mechanism: Prevents splits when child nodes would have too few samples
+  - Higher value = more conservative (stops tree from making splits on small groups)
+  - Effect: Prevents overfitting by avoiding overly specific rules
 
 #### Regularization
 - **`alpha`** - L1 regularization
@@ -107,15 +125,18 @@ Fully managed ML service for building, training, and deploying models at scale.
   - Increase to prevent overfitting
 
 #### Learning
-- **`eta`** (learning rate)
+- **`eta`** (learning rate / step size shrinkage)
   - Range: 0 to 1
   - Default: 0.3
-  - Lower = slower, more robust
+  - Effect: Controls weight update size per iteration
+  - Prevents overfitting by making smaller, gradual updates
+  - Lower = slower training, more robust, less overfitting
 - **`subsample`**
-  - Fraction of training data to sample per tree
+  - Fraction of training data to sample per tree (stochastic gradient boosting)
   - Range: 0 to 1
   - Default: 1
-  - Lower value prevents overfitting
+  - Mechanism: Introduces randomness by training each tree on random subset
+  - Lower value (e.g., 0.7-0.8) prevents overfitting through variance reduction
 
 #### Class Imbalance
 - **`scale_pos_weight`**

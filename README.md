@@ -75,7 +75,7 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 ## 📊 Repository Stats
 
 - **Total Notes:** 13 comprehensive markdown files
-- **Total Lines:** 3,598 lines of exam-focused content
+- **Total Lines:** 3,698 lines of exam-focused content
 - **Coverage:** All 4 AWS MLA exam domains (100%)
 - **Algorithms Covered:** 17 SageMaker built-in algorithms
   - Supervised: Linear Learner, XGBoost, KNN, Factorization Machines
