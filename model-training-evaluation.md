@@ -309,18 +309,255 @@ Techniques and best practices for training ML models and evaluating their perfor
 - **When:** Expensive training jobs (SageMaker default)
 - **SageMaker:** Automatic Model Tuning uses this
 
-### SageMaker Automatic Model Tuning
-- **Algorithm:** Bayesian optimization
-- **Setup:** Specify metric to optimize, hyperparameter ranges
-- **Limits:** Max 750 training jobs per tuning job
-- **Strategies:**
-  - **Bayesian** (default) - Smart search
-  - **Random** - Random sampling
-  - **Grid** - Exhaustive search (small spaces only)
-- **Best practices:**
-  - Start with wide ranges, narrow down
-  - Use log scale for learning rate
-  - Monitor cost (each job = charged training time)
+### SageMaker Automatic Model Tuning (HPO) `#important` `#exam-tip`
+
+**Overview:** Automated hyperparameter optimization using Bayesian search to find best model configuration.
+
+**Algorithm:** Bayesian optimization (default and recommended)
+
+**Key Concepts:**
+- **Objective metric:** What to optimize (e.g., validation:accuracy, validation:rmse)
+- **Hyperparameter ranges:** Search space for each parameter
+- **Training jobs:** Each configuration tested is a separate training job
+- **Warm start:** Reuse results from previous tuning jobs
+
+#### Configuration
+
+**Basic Setup:**
+1. **Define objective metric** - Must be emitted by training algorithm
+   - Classification: `validation:accuracy`, `validation:f1`, `validation:auc`
+   - Regression: `validation:rmse`, `validation:mae`, `validation:r2`
+2. **Specify hyperparameter ranges** - Three types:
+   - **IntegerParameterRange** - Discrete integers (e.g., batch_size: 32-512)
+   - **ContinuousParameterRange** - Continuous values (e.g., learning_rate: 0.001-0.3)
+   - **CategoricalParameterRange** - Fixed choices (e.g., optimizer: ['sgd', 'adam'])
+3. **Set resource limits**
+   - Max concurrent training jobs (default: 2)
+   - Max total training jobs (default: 100, max: 750)
+   - Max runtime per training job
+
+**Tuning Strategies:**
+- **Bayesian** (default) - Smart search, learns from previous jobs ✅ **Recommended**
+- **Random** - Random sampling, good for initial exploration
+- **Grid** - Exhaustive search, only for small spaces (< 10 combinations)
+- **Hyperband** - Advanced, allocates more resources to promising configs
+
+#### Best Practices `#exam-tip`
+
+**1. Hyperparameter Range Selection**
+
+**Start Wide, Then Narrow:**
+```
+Iteration 1 (Wide exploration):
+  learning_rate: 0.0001 to 1.0
+
+Iteration 2 (Narrow refinement):
+  learning_rate: 0.01 to 0.1  (based on Iteration 1 results)
+```
+
+**Use Logarithmic Scale for Learning Rate:** `#important`
+- **Why:** Learning rates vary by orders of magnitude (0.001 vs 0.1)
+- **How:** Use log scale in range definition
+- **Example:** `learning_rate: (0.001, 0.3, 'Logarithmic')`
+- **Effect:** Samples more values in lower ranges (0.001, 0.003, 0.01, 0.03, 0.1)
+
+**Linear Scale for Other Parameters:**
+- Batch size: Linear or Integer scale
+- Tree depth: Integer scale
+- Number of layers: Integer scale
+
+**2. Hyperparameter Priority** `#exam-tip`
+
+**Tune these first (high impact):**
+1. **Learning rate** - Most important, biggest impact
+2. **Regularization** (L1/L2, dropout) - Controls overfitting
+3. **Batch size** - Affects convergence and generalization
+4. **Model architecture** (layers, tree depth) - Core complexity
+
+**Tune these second (medium impact):**
+5. Number of epochs (with early stopping)
+6. Optimizer choice (SGD, Adam, RMSprop)
+7. Activation functions
+
+**Usually don't tune:**
+- Momentum (use defaults)
+- Numerical stability parameters
+- Random seeds
+
+**3. Number of Hyperparameters**
+
+**General rule:** `#exam-tip`
+- **1-3 hyperparameters:** Grid search acceptable
+- **3-6 hyperparameters:** Bayesian optimization (recommended)
+- **6+ hyperparameters:** Random search first, then Bayesian on promising region
+
+**Recommended tuning combinations:**
+
+**Minimal (Fast & Cost-effective):**
+- Learning rate only
+
+**Standard (Balanced):**
+- Learning rate + Batch size + Regularization (L1/L2)
+
+**Comprehensive (High accuracy needed):**
+- Learning rate + Batch size + Regularization + Model architecture + Epochs
+
+**4. Training Job Limits**
+
+**Max Concurrent Jobs:** `#exam-tip`
+- **Default: 2** - Safe, prevents resource exhaustion
+- **Increase to 5-10:** If you have budget and want faster results
+- **Keep low (1-2):** For Bayesian optimization (learns from sequential results)
+- **Higher values:** Better for Random search (truly parallel)
+
+**Max Total Jobs:**
+- **Rule of thumb:** 10x number of hyperparameters being tuned
+- **Example:** Tuning 3 hyperparameters → 30 total jobs minimum
+- **Budget permitting:** 20x for thoroughness
+
+**Early Stopping:** `#important`
+- Enable to stop poor-performing jobs early
+- **Saves cost** - Don't waste time on bad configurations
+- **How:** Monitor validation metric, stop if not improving
+
+**5. Objective Metric Selection** `#exam-tip`
+
+**Key principle:** Metric must be emitted by training algorithm
+
+| Problem Type | Recommended Metric | Why |
+|--------------|-------------------|-----|
+| Binary classification (balanced) | `validation:auc` | Threshold-independent, robust |
+| Binary classification (imbalanced) | `validation:f1` | Balances precision and recall |
+| Multi-class classification | `validation:accuracy` | Simple, interpretable |
+| Regression (normal) | `validation:rmse` | Penalizes large errors |
+| Regression (outliers) | `validation:mae` | Robust to outliers |
+| Custom metric | Define in training script | Must emit during training |
+
+**Gotcha:** `#gotcha`
+- Metric must be prefixed with `train:` or `validation:`
+- Use `validation:` metrics (not `train:`) - avoids overfitting
+- Metric name must exactly match algorithm output
+
+**6. Warm Start** `#exam-tip`
+
+**What it is:** Reuse hyperparameter search results from previous tuning jobs
+
+**When to use:**
+- **Iterative refinement:** Start with wide range, narrow down in second job
+- **Incremental dataset:** Reuse tuning from smaller dataset as starting point
+- **Similar problem:** Transfer knowledge from related task
+- **Resume interrupted job:** Continue from where it stopped
+
+**Benefits:**
+- ✅ Faster convergence (don't start from scratch)
+- ✅ Cost savings (fewer jobs needed)
+- ✅ Transfer learning for hyperparameters
+
+**Configuration:**
+```python
+parent_tuning_jobs = [
+    {'HyperParameterTuningJobName': 'previous-job-name'}
+]
+```
+
+**Limitation:** Can only warm start from jobs with same hyperparameter names
+
+**7. Cost Optimization** `#exam-tip`
+
+**Cost = (# of training jobs) × (instance cost per hour) × (training time)**
+
+**Strategies to reduce cost:**
+
+1. **Use Spot Instances with HPO**
+   - Up to 90% savings on training cost
+   - Combine checkpointing with spot for robustness
+   - HPO automatically retries failed spot jobs
+
+2. **Limit max training jobs**
+   - Start with 20-30 jobs, not 750
+   - Analyze results, then run more if needed
+
+3. **Use smaller instances for exploration**
+   - Run HPO on smaller instance type (e.g., ml.m5.large)
+   - Once optimal hyperparameters found, retrain on larger instance
+
+4. **Enable early stopping**
+   - Stop unpromising jobs early
+   - Can save 30-50% of tuning cost
+
+5. **Start with Random search**
+   - Cheaper than Bayesian for initial exploration
+   - Switch to Bayesian for refinement
+
+**8. Common Pitfalls** `#gotcha`
+
+**Overfitting to validation set:**
+- **Problem:** Too many tuning iterations overfit validation data
+- **Solution:** Hold out separate test set, never tune on it
+
+**Tuning too many hyperparameters:**
+- **Problem:** Search space explodes, need 100s of jobs
+- **Solution:** Fix less important parameters, tune only critical ones
+
+**Using training metrics instead of validation:**
+- **Problem:** Optimize for training performance → overfitting
+- **Solution:** Always use `validation:metric`, never `train:metric`
+
+**Insufficient training jobs:**
+- **Problem:** 10 jobs for 5 hyperparameters = underfitting search space
+- **Solution:** Use 10x rule (50 jobs minimum)
+
+**Wrong scale for learning rate:**
+- **Problem:** Linear scale misses good values in 0.001-0.01 range
+- **Solution:** Always use logarithmic scale for learning rate
+
+**9. Monitoring and Analysis** `#exam-tip`
+
+**During tuning:**
+- Monitor in SageMaker Console → Training Jobs
+- Check objective metric trend (improving?)
+- Watch for early stopping triggers
+- Monitor cost accumulation
+
+**After tuning:**
+- **Best training job:** Automatically identified by SageMaker
+- **Hyperparameter importance plot:** See which parameters matter most
+- **Objective metric vs hyperparameter plots:** Visualize relationships
+- **Export results:** Download all job results for analysis
+
+**SageMaker provides:**
+- Automatic ranking of all jobs
+- Best hyperparameter configuration
+- Visualization of search progress
+
+**10. Exam-Focused Best Practices Summary** `#exam-tip`
+
+**If exam asks "Best practice for HPO":**
+- ✅ Use Bayesian optimization (default, most efficient)
+- ✅ Use logarithmic scale for learning rate
+- ✅ Start with wide ranges, narrow down iteratively
+- ✅ Tune learning rate first (highest impact)
+- ✅ Use validation metrics (not training metrics)
+- ✅ Enable early stopping (cost savings)
+- ✅ Use warm start for iterative refinement
+- ✅ Combine with Spot instances for cost optimization
+- ✅ Limit concurrent jobs to 2-5 for Bayesian (learns sequentially)
+- ✅ Budget 10x jobs per hyperparameter tuned
+
+**If exam asks "Cost optimization for HPO":**
+- ✅ Use Managed Spot Training (90% savings)
+- ✅ Enable early stopping
+- ✅ Limit max total training jobs
+- ✅ Start with smaller instances
+- ✅ Use Random search for initial exploration (cheaper)
+
+#### Limits and Quotas `#exam-tip`
+
+- **Max training jobs per tuning job:** 750
+- **Max parallel tuning jobs:** 100 (account limit)
+- **Max concurrent training jobs:** 100 (default: 2)
+- **Max tuning job runtime:** 5 days (default: no limit)
+- **Warm start:** Max 5 parent tuning jobs
 
 ## Exam Tips `#exam-tip`
 - **Data drift:** Input data distribution changes
