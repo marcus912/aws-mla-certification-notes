@@ -7,7 +7,8 @@
 | Use Case | Service |
 |----------|---------|
 | Build custom ML models | SageMaker |
-| Pre-trained foundation models | Bedrock |
+| Pre-trained foundation models (LLMs, image gen) | Bedrock |
+| Chatbot, summarization, content generation | Bedrock |
 | Text analysis (sentiment, entities) | Comprehend |
 | Text-to-speech | Polly |
 | Speech-to-text | Transcribe |
@@ -191,6 +192,9 @@ Accuracy = (TP + TN) / (TP + TN + FP + FN)
 | Gradient boosting on tabular data | XGBoost |
 | Time series with confidence intervals | DeepAR |
 | Translate languages | Seq2Seq (custom) or Translate (pre-trained) |
+| Generate text (chatbot, summarization) | Bedrock (Claude, Titan) |
+| Generate images from text | Bedrock (Stable Diffusion, Titan Image) |
+| Q&A over company documents | Bedrock + RAG or Q Business |
 | Find objects in images | Object Detection |
 | Pixel-level segmentation | Semantic Segmentation |
 | Account takeover detection | IP Insights |
@@ -211,13 +215,18 @@ Accuracy = (TP + TN) / (TP + TN + FP + FN)
 
 | If you need... | Use... |
 |----------------|--------|
+| **Chatbot (conversational AI)** | **Bedrock (Claude) or Lex** |
+| **Text summarization** | **Bedrock** |
+| **Content generation** | **Bedrock** |
+| **Image generation from text** | **Bedrock (Stable Diffusion)** |
+| **Semantic search** | **Bedrock Embeddings** |
 | Sentiment analysis | Comprehend |
 | Translate languages | Translate |
 | Transcribe audio | Transcribe |
 | Generate speech | Polly |
 | Detect objects in images | Rekognition |
 | Extract invoice data | Textract |
-| Voice/text chatbot | Lex |
+| Task-oriented chatbot (intents/slots) | Lex |
 | Natural language search | Kendra |
 | Product recommendations | Personalize |
 | Detect fraud | Fraud Detector |

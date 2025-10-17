@@ -75,7 +75,7 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 ## 📊 Repository Stats
 
 - **Total Notes:** 13 comprehensive markdown files
-- **Total Lines:** 4,840 lines of exam-focused content
+- **Total Lines:** 5,196 lines of exam-focused content
 - **Coverage:** All 4 AWS MLA exam domains (100%)
 - **Algorithms Covered:** 17 SageMaker built-in algorithms
   - Supervised: Linear Learner, XGBoost, KNN, Factorization Machines
@@ -86,11 +86,12 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
   - Anomaly Detection: Random Cut Forest, IP Insights
 - **Services Covered:** 25+ AWS ML/AI services
   - 16 AI Services (Comprehend, Rekognition, Lex, Textract, etc.)
+  - Generative AI (Bedrock: Claude, Titan, Stable Diffusion; Amazon Q)
   - SageMaker ecosystem (Training, Clarify, Ground Truth, Pipelines, Experiments, TensorBoard)
   - Data services (S3, Glue, Athena, EMR, Kinesis, Redshift, Lake Formation)
   - Data Lakes (Lake Formation: column/row security, LF-Tags, permissions)
   - Instance Types (M5, C5, P3, P4d, G4dn, G5, Inf1, Trn1) - Training & inference selection
-- **Exam Tips:** 184 `#exam-tip` tags throughout
+- **Exam Tips:** 199 `#exam-tip` tags throughout
 - **Study Time:** 10-week suggested plan in study guide
 
 ## 🤝 Contributing
