@@ -821,27 +821,47 @@ tf.summary.scalar('loss/validation', val_loss, step=epoch)
 
 ## Security & Compliance `#important`
 
-### Network Isolation
-- **VPC mode** - Training and inference in VPC
-- **Private subnets** - No internet access
-- **VPC endpoints** - Access S3, SageMaker privately
-- **Security groups** - Control traffic
+**📖 For comprehensive security coverage, see [Security](./security.md)**
 
-### Encryption
-- **At rest:** S3 (training data), EBS (training volumes), model artifacts
-- **In transit:** TLS for API calls, inter-node communication
-- **KMS integration** - Customer-managed keys
+### Quick Security Checklist
 
-### Access Control
-- **IAM roles** - Training job roles, endpoint execution roles
-- **Resource policies** - Fine-grained permissions
-- **Service Control Policies (SCPs)** - Organization-wide guardrails
+**Network Isolation:**
+- **VPC mode** - Training and inference in private subnets
+- **VPC endpoints** - S3 Gateway Endpoint (free), SageMaker Interface Endpoints
+- **Security groups** - Restrict inbound/outbound traffic
+- **NAT Gateway** - Outbound internet access (or use VPC Endpoints only)
 
-### Compliance
-- **Audit logging** - CloudTrail for all API calls
-- **HIPAA eligible** - For healthcare data
-- **PCI compliant** - For payment data
+**Encryption:**
+- **At rest:** S3 (SSE-KMS), EBS (KMS), model artifacts (KMS)
+- **In transit:** TLS 1.2+ for all communications
+- **KMS keys** - Use customer-managed keys for compliance
+- **Inter-container encryption** - Enable for distributed training
+
+**Access Control:**
+- **IAM roles** - Separate roles for training, inference, users
+- **Least privilege** - Minimum permissions required
+- **Secrets Manager** - Store credentials, API keys
+- **MFA** - Enable for privileged users
+
+**Monitoring & Audit:**
+- **CloudTrail** - Log all API calls
+- **VPC Flow Logs** - Network traffic monitoring
+- **CloudWatch Logs** - Training/inference logs
+- **Macie** - PII discovery in S3
+
+**Compliance:**
+- **HIPAA eligible** - VPC + Encryption + BAA
+- **PCI DSS** - Encryption, audit logging
+- **GDPR** - Data anonymization, right to be forgotten
 - **Model governance** - Model Registry approval workflows
+
+**See [Security](./security.md) for details on:**
+- IAM policies, roles, MFA
+- VPC configuration (subnets, endpoints, peering, PrivateLink)
+- KMS encryption, key rotation
+- Data masking and anonymization
+- Macie, WAF, Shield
+- Complete security best practices
 
 ## Monitoring & Observability `#exam-tip`
 
@@ -907,6 +927,7 @@ tf.summary.scalar('loss/validation', val_loss, step=epoch)
 | Monitor for bias in production | Model Monitor + Clarify (Bias Drift) |
 
 ## Related Topics
+- [Security](./security.md) - Comprehensive security coverage
 - [Amazon SageMaker](./sagemaker.md)
 - [Model Training & Evaluation](./model-training-evaluation.md)
 - [SageMaker Clarify](./sagemaker-clarify.md)

@@ -33,9 +33,10 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 - [Amazon SageMaker](./sagemaker.md) - Custom ML model building
 - [SageMaker Clarify](./sagemaker-clarify.md) - Bias & Explainability
 - [AWS ML Algorithms](./aws-ml-algorithms.md) - All 17 SageMaker built-in algorithms
-- [AWS AI Services](./aws-ai-services.md) - Comprehend, Rekognition, Lex, Textract, Kendra, etc.
+- [AWS AI Services](./aws-ai-services.md) - Comprehend, Rekognition, Lex, Textract, Kendra, Bedrock
 - [Data Services](./data-services.md) - S3, Glue, Athena, EMR, Kinesis, Lake Formation, Ground Truth
-- [MLOps & Deployment](./mlops-deployment.md) - Endpoints, monitoring, CI/CD
+- [MLOps & Deployment](./mlops-deployment.md) - Endpoints, monitoring, CI/CD, Experiments, TensorBoard
+- [Security](./security.md) - IAM, VPC, encryption, KMS, Macie, WAF, compliance
 
 ### Quick References
 - [📝 Study Guide](./study-guide.md) - **START HERE!** Exam strategy & roadmap
@@ -63,7 +64,8 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 
 ### Data & MLOps
 - [ ] Data Services (S3, Glue, Athena, EMR, Kinesis, Lake Formation, Ground Truth)
-- [ ] MLOps & Deployment (Endpoints, Model Monitor, Pipelines)
+- [ ] MLOps & Deployment (Endpoints, Model Monitor, Pipelines, Experiments, TensorBoard)
+- [ ] Security (IAM, VPC, Encryption, KMS, Macie, WAF)
 
 ## Tags
 - `#core` - Core exam topic
@@ -74,8 +76,8 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 
 ## 📊 Repository Stats
 
-- **Total Notes:** 13 comprehensive markdown files
-- **Total Lines:** 5,196 lines of exam-focused content
+- **Total Notes:** 12 comprehensive markdown files
+- **Total Lines:** 6,258 lines of exam-focused content
 - **Coverage:** All 4 AWS MLA exam domains (100%)
 - **Algorithms Covered:** 17 SageMaker built-in algorithms
   - Supervised: Linear Learner, XGBoost, KNN, Factorization Machines
@@ -91,7 +93,7 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
   - Data services (S3, Glue, Athena, EMR, Kinesis, Redshift, Lake Formation)
   - Data Lakes (Lake Formation: column/row security, LF-Tags, permissions)
   - Instance Types (M5, C5, P3, P4d, G4dn, G5, Inf1, Trn1) - Training & inference selection
-- **Exam Tips:** 199 `#exam-tip` tags throughout
+- **Exam Tips:** 248 `#exam-tip` tags throughout
 - **Study Time:** 10-week suggested plan in study guide
 
 ## 🤝 Contributing
@@ -137,7 +139,8 @@ aws-mla-certification-notes/
 │   ├── aws-ml-algorithms.md
 │   ├── aws-ai-services.md
 │   ├── data-services.md
-│   └── mlops-deployment.md
+│   ├── mlops-deployment.md
+│   └── security.md
 │
 ├── Quick References
 │   ├── study-guide.md         # START HERE!

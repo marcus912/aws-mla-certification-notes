@@ -232,10 +232,52 @@ Accuracy = (TP + TN) / (TP + TN + FP + FN)
 | Detect fraud | Fraud Detector |
 | Human verification | A2I |
 
-## Security Best Practices
-- Use VPC for training and inference
-- Enable encryption at rest (S3, EBS)
-- Enable encryption in transit (TLS)
-- Use IAM roles for permissions
-- Enable CloudWatch logging
-- Use AWS KMS for key management
+## Security Best Practices `#important`
+
+### SageMaker Security Checklist
+- ✅ **VPC mode** - Private subnets for training/inference
+- ✅ **Encryption at rest** - KMS for S3, EBS, model artifacts
+- ✅ **Encryption in transit** - TLS for all communications
+- ✅ **IAM least privilege** - Separate roles for training/inference/users
+- ✅ **VPC Endpoints** - S3 Gateway Endpoint, SageMaker Interface Endpoints
+- ✅ **Security Groups** - Restrict inbound to necessary ports only
+- ✅ **Secrets Manager** - Never hardcode credentials
+- ✅ **CloudTrail** - Audit all API calls
+- ✅ **Macie** - Scan for PII before training
+
+### Quick Security Decisions `#exam-tip`
+
+| Scenario | Solution |
+|----------|----------|
+| Train on sensitive data | VPC + Encryption + IAM least privilege |
+| Training can't access S3 in VPC | S3 VPC Gateway Endpoint |
+| Find PII before training | Amazon Macie |
+| Store database password | AWS Secrets Manager |
+| Block specific IP | NACL (not Security Group) |
+| Protect API from DDoS | API Gateway + WAF + Shield |
+| Enforce HTTPS for S3 | Bucket policy: `aws:SecureTransport=true` |
+| Access SageMaker from private subnet | SageMaker VPC Interface Endpoints |
+| Encrypt model artifacts | `output_kms_key` parameter |
+
+### IAM Roles for SageMaker
+
+| Role | Needs Access To |
+|------|----------------|
+| **Training Job** | S3 (training data, models), ECR, CloudWatch Logs, KMS |
+| **Endpoint** | S3 (model artifacts), CloudWatch Logs, ECR |
+| **Data Scientist** | SageMaker Studio, S3 (read), NO delete production |
+
+### VPC Configuration Options
+
+| Option | Cost | Internet Access | Use Case |
+|--------|------|----------------|----------|
+| **No VPC** | Free | ✅ Yes | Public data, prototyping |
+| **VPC + NAT Gateway** | $$ | ✅ Outbound only | Need packages from internet |
+| **VPC + All Endpoints** | $ | ❌ No | Complete isolation, compliance |
+
+### Encryption Keys
+
+| Key Type | Managed By | Rotation | Cost | Use When |
+|----------|-----------|----------|------|----------|
+| AWS Managed | AWS | Auto (yearly) | Free | Easy, no requirements |
+| Customer Managed | You | Manual/Auto | $1/mo | Compliance requires |
