@@ -33,7 +33,8 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 - [Amazon SageMaker](./sagemaker.md) - Custom ML model building
 - [SageMaker Clarify](./sagemaker-clarify.md) - Bias & Explainability
 - [AWS ML Algorithms](./aws-ml-algorithms.md) - All 17 SageMaker built-in algorithms
-- [AWS AI Services](./aws-ai-services.md) - Comprehend, Rekognition, Lex, Textract, Kendra, Bedrock
+- [AWS AI Services](./aws-ai-services.md) - Comprehend, Rekognition, Lex, Textract, Kendra, Personalize
+- [AWS Generative AI](./aws-generative-ai.md) - Bedrock, Amazon Q (foundation models & LLMs)
 - [Data Services](./data-services.md) - S3, Glue, Athena, EMR, Kinesis, Lake Formation, Ground Truth
 - [MLOps & Deployment](./mlops-deployment.md) - Endpoints, monitoring, CI/CD, Experiments, TensorBoard
 - [Security](./security.md) - IAM, VPC, encryption, KMS, Macie, WAF, compliance
@@ -60,7 +61,8 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 - [ ] Vision Services (Rekognition, Textract)
 - [ ] Conversational AI (Lex)
 - [ ] Search & Recommendations (Kendra, Personalize)
-- [ ] Specialized (A2I, Lookout, Fraud Detector, Q)
+- [ ] Specialized (A2I, Lookout, Fraud Detector)
+- [ ] Generative AI (Bedrock, Amazon Q)
 
 ### Data & MLOps
 - [ ] Data Services (S3, Glue, Athena, EMR, Kinesis, Lake Formation, Ground Truth)
@@ -76,8 +78,8 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 
 ## 📊 Repository Stats
 
-- **Total Notes:** 12 comprehensive markdown files
-- **Total Lines:** 6,707 lines of exam-focused content
+- **Total Notes:** 13 comprehensive markdown files
+- **Total Lines:** 6,763 lines of exam-focused content
 - **Coverage:** All 4 AWS MLA exam domains (100%)
 - **Algorithms Covered:** 17 SageMaker built-in algorithms
   - Supervised: Linear Learner, XGBoost, KNN, Factorization Machines
@@ -87,13 +89,13 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
   - Unsupervised: K-Means, PCA, LDA, NTM
   - Anomaly Detection: Random Cut Forest, IP Insights
 - **Services Covered:** 25+ AWS ML/AI services
-  - 16 AI Services (Comprehend, Rekognition, Lex, Textract, etc.)
-  - Generative AI (Bedrock: Claude, Titan, Stable Diffusion; Amazon Q)
+  - Traditional AI Services (Comprehend, Rekognition, Lex, Textract, Kendra, Personalize, etc.)
+  - Generative AI (Bedrock: Claude, Titan, Stable Diffusion; Amazon Q family)
   - SageMaker ecosystem (Training, Clarify, Ground Truth, Pipelines, Experiments, TensorBoard)
   - Data services (S3, Glue, Athena, EMR, Kinesis, Redshift, Lake Formation)
   - Data Lakes (Lake Formation: column/row security, LF-Tags, permissions)
   - Instance Types (M5, C5, P3, P4d, G4dn, G5, Inf1, Trn1) - Training & inference selection
-- **Exam Tips:** 259 `#exam-tip` tags throughout
+- **Exam Tips:** 269 `#exam-tip` tags throughout
 - **Study Time:** 10-week suggested plan in study guide
 
 ## 🤝 Contributing
@@ -138,6 +140,7 @@ aws-mla-certification-notes/
 │   ├── sagemaker-clarify.md
 │   ├── aws-ml-algorithms.md
 │   ├── aws-ai-services.md
+│   ├── aws-generative-ai.md
 │   ├── data-services.md
 │   ├── mlops-deployment.md
 │   └── security.md
