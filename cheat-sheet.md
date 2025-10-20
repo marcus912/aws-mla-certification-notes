@@ -195,6 +195,9 @@ Accuracy = (TP + TN) / (TP + TN + FP + FN)
 | Generate text (chatbot, summarization) | Bedrock (Claude, Titan) |
 | Generate images from text | Bedrock (Stable Diffusion, Titan Image) |
 | Q&A over company documents | Bedrock + RAG or Q Business |
+| Limited training data for image classification | Transfer learning (ResNet, VGG pre-trained) |
+| Reduce training cost | Transfer learning instead of from scratch |
+| 500 images for custom classification | Transfer learning (Feature Extraction) |
 | Find objects in images | Object Detection |
 | Pixel-level segmentation | Semantic Segmentation |
 | Account takeover detection | IP Insights |
@@ -281,3 +284,28 @@ Accuracy = (TP + TN) / (TP + TN + FP + FN)
 |----------|-----------|----------|------|----------|
 | AWS Managed | AWS | Auto (yearly) | Free | Easy, no requirements |
 | Customer Managed | You | Manual/Auto | $1/mo | Compliance requires |
+
+## Transfer Learning Quick Reference `#exam-tip`
+
+| Dataset Size | Strategy | Example |
+|--------------|----------|---------|
+| **Small (< 1K)** | Feature Extraction (freeze base) | 500 images → Use ResNet, train only final layer |
+| **Medium (1K-10K)** | Fine-Tuning (unfreeze later layers) | 5000 images → Unfreeze last block + final layer |
+| **Large (> 10K)** | Fine-Tuning or From Scratch | 50K images → Fine-tune all layers or train from scratch |
+
+### When to Use Transfer Learning
+- ✅ Small dataset (< 10K samples)
+- ✅ Limited compute budget
+- ✅ Need quick results
+- ✅ Similar domain to pre-trained model
+
+### Pre-trained Models
+- **Images:** ResNet, VGG, Inception, MobileNet (ImageNet)
+- **NLP:** BERT, GPT, RoBERTa (Hugging Face)
+- **SageMaker:** Image Classification algorithm (`use_pretrained_model=1`)
+
+### Key Exam Points
+- **"Limited data"** → Transfer learning
+- **"Cost optimization"** → Transfer learning (faster = cheaper)
+- **"Training failing on small dataset"** → Switch to transfer learning
+- **Lower learning rate** for fine-tuning (10-100x lower than from scratch)
