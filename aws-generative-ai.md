@@ -109,29 +109,358 @@ AWS services for generative AI, foundation models, and large language models (LL
 - **"Answer questions using latest company policies"** → RAG (documents change)
 - **"Generate responses in specific legal format"** → Fine-tuning (style/format)
 
-**4. Bedrock Agents** `#exam-tip`
+**4. Bedrock Agents** `#important` `#exam-tip`
 
-**Purpose:** Build AI agents that can use tools and take actions
+**Purpose:** Build AI agents that can use tools, take actions, and orchestrate complex multi-step workflows
 
-**Capabilities:**
-- **Break down tasks** into steps
-- **Call APIs** to get information or perform actions
-- **Use tools** (Lambda functions, APIs)
-- **Multi-step reasoning** - Plan and execute complex workflows
+**Key Concept:** Agents combine foundation models with the ability to call APIs, access data, and execute actions autonomously.
 
-**Example:**
-- User: "Book me a flight to NYC next week"
-- Agent:
-  1. Check calendar (Lambda function)
-  2. Search flights (API call)
-  3. Compare options
-  4. Book flight (API call)
-  5. Confirm booking
+#### What are Bedrock Agents?
+
+**Definition:** Fully managed capability that allows LLMs to execute multi-step tasks by:
+- Breaking down user requests into steps
+- Calling APIs and Lambda functions
+- Accessing Knowledge Bases for information
+- Reasoning about next actions
+- Orchestrating complex workflows
+
+**Key Characteristics:**
+- **Autonomous reasoning** - Agent decides which tools to use and when
+- **Multi-step execution** - Chains multiple actions together
+- **Tool integration** - Lambda functions, APIs, Knowledge Bases
+- **Natural language interface** - Users interact in plain language
+- **Managed orchestration** - AWS handles the workflow logic
+
+#### Agent Components `#exam-tip`
+
+**1. Foundation Model**
+- Base LLM that powers the agent (Claude, Titan, etc.)
+- Provides reasoning and language understanding
+- Determines which actions to take
+
+**2. Instructions**
+- Natural language description of what the agent does
+- Agent's role, capabilities, and behavior
+- Example: "You are a travel assistant that helps users book flights and hotels"
+
+**3. Action Groups** `#important`
+- **Definition:** Collections of APIs/functions the agent can call
+- **Implementation:** Lambda functions or API schemas
+- **Purpose:** Define available tools/actions
+
+**Action Group Components:**
+- **API Schema** - OpenAPI spec defining available functions
+- **Lambda Function** - Executes the action
+- **Description** - Helps agent decide when to use this action
+
+**Example Action Group:**
+```json
+{
+  "actionGroupName": "FlightBookingActions",
+  "description": "Actions for searching and booking flights",
+  "actionGroupExecutor": {
+    "lambda": "arn:aws:lambda:us-east-1:123456789012:function:flight-booking"
+  },
+  "apiSchema": {
+    "payload": "OpenAPI 3.0 schema with functions: searchFlights, bookFlight, cancelFlight"
+  }
+}
+```
+
+**4. Knowledge Bases** (Optional)
+- Connect agent to Bedrock Knowledge Bases
+- Agent can retrieve information from documents
+- Combines RAG with agentic workflows
+- **Use case:** Agent answers questions using company docs, then takes actions
+
+**5. Guardrails** (Optional)
+- Apply content filters and safety policies
+- Ensure safe, compliant agent behavior
+
+#### Agent Workflow (Orchestration) `#exam-tip`
+
+**Step-by-Step Execution:**
+
+1. **User Request**
+   - User: "Book me a flight to NYC next week and reserve a hotel"
+
+2. **Agent Planning** (Foundation Model Reasoning)
+   - Agent analyzes request
+   - Breaks down into steps: check calendar → search flights → book flight → search hotels → book hotel
+
+3. **Action Selection**
+   - Agent decides which Action Group to call
+   - Selects specific function from API schema
+   - Example: Calls `checkCalendar` from CalendarActions
+
+4. **Action Execution**
+   - Agent invokes Lambda function with parameters
+   - Lambda returns result
+
+5. **Knowledge Base Query** (if needed)
+   - Agent searches Knowledge Base for relevant info
+   - Example: "What's our company travel policy?"
+
+6. **Next Action**
+   - Agent uses previous results to determine next step
+   - Continues until task complete
+
+7. **Response Generation**
+   - Agent synthesizes results into natural language response
+   - Returns to user
+
+**Example Flow:**
+```
+User: "Book me a flight to NYC next week"
+
+Agent Planning:
+├─ Step 1: Call checkCalendar(nextWeek) → Returns: "Available Mon-Wed"
+├─ Step 2: Call searchFlights(NYC, Monday) → Returns: [Flight options]
+├─ Step 3: Call bookFlight(flightId=AA123) → Returns: "Booked"
+└─ Step 4: Generate response → "Booked flight AA123 to NYC on Monday"
+```
+
+#### Agent Versions and Aliases `#important` `#exam-tip`
+
+**Agent Versioning:**
+
+**Purpose:** Manage different versions of your agent for safe deployment and testing.
+
+**Key Concepts:**
+- **Working Draft** - Editable version, always exists
+- **Versions** - Immutable snapshots (v1, v2, v3, etc.)
+- **Aliases** - Pointers to specific versions
+
+**Version Lifecycle:**
+
+1. **Working Draft**
+   - Active development version
+   - Can be edited and tested
+   - Not suitable for production
+   - Always available
+
+2. **Create Version**
+   - Snapshot the Working Draft
+   - Creates immutable version (e.g., v1)
+   - Cannot be modified
+   - Can be used in production
+
+3. **Aliases**
+   - Named pointers to versions
+   - Can be updated to point to different versions
+   - Enable safe deployment patterns
+
+**Agent Aliases** `#exam-tip`
+
+**Purpose:** Point to specific agent versions, enabling deployment strategies and rollback.
+
+**Common Alias Patterns:**
+
+| Alias Name | Points To | Purpose |
+|------------|-----------|---------|
+| **DRAFT** | Working Draft | Development and testing |
+| **TEST** | v2 | Staging environment testing |
+| **PROD** | v1 | Production traffic |
+| **BETA** | v3 | Beta user testing |
+
+**Benefits:**
+- ✅ **Safe deployment** - Test new version before switching PROD alias
+- ✅ **Instant rollback** - Change alias back to previous version
+- ✅ **A/B testing** - Multiple aliases point to different versions
+- ✅ **Environment separation** - DEV, TEST, PROD aliases
+
+**Deployment Pattern:** `#exam-tip`
+
+**Blue/Green Deployment:**
+```
+1. Current state:
+   - PROD alias → v1 (stable)
+
+2. Develop new features:
+   - Edit Working Draft
+   - Test with DRAFT alias
+
+3. Create new version:
+   - Create v2 from Working Draft
+   - TEST alias → v2
+   - Run integration tests
+
+4. Deploy to production:
+   - PROD alias → v2 (switch)
+   - If issues: PROD alias → v1 (rollback)
+```
+
+**Exam Scenario:** `#exam-tip`
+- **"Need to test agent changes before production"** → Create new version, use TEST alias
+- **"Agent deployed but has issues, need to revert"** → Change PROD alias to previous version
+- **"Run A/B test with different agent configurations"** → Use two aliases pointing to different versions
+
+**Alias vs Version Comparison:**
+
+| Aspect | Version | Alias |
+|--------|---------|-------|
+| **Mutability** | Immutable (cannot change) | Mutable (can point to different versions) |
+| **Purpose** | Snapshot of agent config | Pointer to version for deployment |
+| **Use Case** | Version control, audit trail | Environment management, rollback |
+| **Creation** | Create from Working Draft | Point to any version |
+| **Deletion** | Can delete old versions | Can delete aliases |
+
+#### Agent + Knowledge Bases Integration `#important` `#exam-tip`
+
+**Purpose:** Combine agent's action capabilities with RAG for information retrieval.
+
+**How It Works:**
+1. User asks agent a question
+2. Agent decides: "I need information from documents"
+3. Agent queries Knowledge Base automatically
+4. Retrieves relevant documents
+5. Uses retrieved info + foundation model to answer
+6. Optionally takes actions based on retrieved info
 
 **Use Cases:**
-- Customer service automation
-- Task automation (data retrieval, report generation)
-- Multi-step workflows
+- **Customer support agent:** Answers questions from docs, then creates support ticket
+- **HR assistant:** Looks up policies, then files leave request
+- **Sales agent:** Checks product specs, then generates quote
+
+**Example:**
+```
+User: "What's our return policy and process a return for order 12345?"
+
+Agent workflow:
+1. Query Knowledge Base: "return policy" → Retrieves policy document
+2. Read policy: "30-day returns accepted"
+3. Call Action Group: processReturn(orderId=12345)
+4. Response: "Per our 30-day policy, I've processed your return for order 12345"
+```
+
+**Benefits:**
+- ✅ **Up-to-date information** - Knowledge Base updated without retraining
+- ✅ **Actions + Knowledge** - Agent both retrieves info and takes actions
+- ✅ **Grounded responses** - Answers based on actual documents, not hallucinations
+
+**Exam Tip:** `#exam-tip`
+- **Agent + Knowledge Base** = RAG + Actions
+- Use when you need both information retrieval and task execution
+- Knowledge Base provides context, Action Groups provide capabilities
+
+#### Agent Session State
+
+**Purpose:** Maintain context across multiple interactions in a conversation.
+
+**Features:**
+- **Session ID** - Track conversation thread
+- **Context retention** - Remember previous messages
+- **Multi-turn conversations** - Agent remembers what user said earlier
+- **State management** - Track progress in multi-step tasks
+
+**Example:**
+```
+Turn 1:
+User: "I need to book a flight to NYC"
+Agent: "When would you like to travel?"
+
+Turn 2:
+User: "Next Monday"
+Agent: [Remembers: destination=NYC, date=next Monday]
+      "Found 3 flights. Would you like economy or business class?"
+
+Turn 3:
+User: "Economy"
+Agent: [Remembers all previous context]
+      "Booked economy flight to NYC next Monday"
+```
+
+#### Use Cases `#exam-tip`
+
+**1. Customer Service Automation**
+- **Problem:** Handle customer requests that require multiple actions
+- **Solution:** Agent with Action Groups for ticket creation, order lookup, refund processing
+- **Benefit:** Autonomous resolution without human intervention
+
+**2. Travel Booking Assistant**
+- **Problem:** Book complex itineraries (flights, hotels, rental cars)
+- **Solution:** Agent with Action Groups for each booking service
+- **Benefit:** Natural language interface, multi-step orchestration
+
+**3. IT Help Desk**
+- **Problem:** Troubleshoot issues and execute fixes
+- **Solution:** Agent with Knowledge Base (troubleshooting docs) + Action Groups (reset passwords, provision resources)
+- **Benefit:** Answer questions + take corrective actions
+
+**4. Sales Assistant**
+- **Problem:** Answer product questions and generate quotes
+- **Solution:** Agent with Knowledge Base (product docs) + Action Group (CRM integration)
+- **Benefit:** Informed responses + automated quote generation
+
+**5. HR Assistant**
+- **Problem:** Answer policy questions and process requests
+- **Solution:** Agent with Knowledge Base (HR policies) + Action Groups (leave requests, benefits enrollment)
+- **Benefit:** Self-service for employees
+
+#### Best Practices `#exam-tip`
+
+**1. Agent Instructions**
+- Be specific about agent role and capabilities
+- Include examples of desired behavior
+- Set clear boundaries ("Don't process refunds over $1000 without approval")
+
+**2. Action Groups**
+- **Single responsibility** - Each Action Group focused on one domain
+- **Clear descriptions** - Help agent choose correct action
+- **Error handling** - Lambda functions return clear error messages
+
+**3. Versioning Strategy**
+- Always test in DRAFT or TEST alias before production
+- Create version before deploying to PROD
+- Keep 2-3 recent versions for quick rollback
+- Document what changed in each version
+
+**4. Knowledge Base Integration**
+- Keep documents updated in Knowledge Base
+- Use specific, well-structured documents
+- Test agent's retrieval quality
+
+**5. Monitoring**
+- Track agent invocations in CloudWatch
+- Monitor Lambda function execution times
+- Alert on agent errors or failures
+
+#### Limitations `#exam-tip`
+
+- **Execution time** - Agents can take longer than simple API calls (multi-step reasoning)
+- **Cost** - Pay for foundation model tokens + Lambda invocations + Knowledge Base queries
+- **Action Group limit** - Maximum number of Action Groups per agent
+- **Orchestration control** - Agent decides actions (not deterministic like state machines)
+- **Error handling** - Agent may not always handle errors gracefully
+
+#### Agents vs Other AWS Services `#exam-tip`
+
+| Capability | Bedrock Agents | Step Functions | Lambda | Lex |
+|------------|----------------|----------------|--------|-----|
+| **Natural language** | ✅ Yes | ❌ No | ❌ No | ✅ Yes (intents) |
+| **Multi-step orchestration** | ✅ Autonomous | ✅ Explicit | ❌ Single function | ⚠️ Dialog management |
+| **Reasoning** | ✅ LLM-powered | ❌ Pre-defined | ❌ No | ⚠️ Intent-based |
+| **Tool calling** | ✅ Yes | ✅ Yes | N/A | ✅ Yes (fulfillment) |
+| **Use case** | Conversational automation | Workflow orchestration | Single functions | Task-oriented bots |
+
+**Key Exam Distinctions:**
+- **Bedrock Agents** - Autonomous, LLM-powered, conversational workflows
+- **Step Functions** - Deterministic, pre-defined workflows
+- **Lex** - Intent-based bots (user explicitly states intent)
+- **Lambda** - Single-purpose functions (not orchestration)
+
+#### Exam Scenarios `#important` `#exam-tip`
+
+| Scenario | Solution | Reasoning |
+|----------|----------|-----------|
+| "Build AI assistant that books hotels AND answers questions about travel policies" | **Bedrock Agent + Knowledge Base** | Need both RAG (policies) and actions (booking) |
+| "Deploy new agent version without affecting production" | **Create version, use TEST alias** | Test before changing PROD alias |
+| "Agent deployed has bug, need immediate fix" | **Change PROD alias to previous version** | Instant rollback |
+| "Autonomous customer service that creates tickets and looks up orders" | **Bedrock Agent with Action Groups** | Multi-step, autonomous actions |
+| "Want agent to call multiple Lambda functions based on user request" | **Bedrock Agent with multiple Action Groups** | Each Action Group = set of related functions |
+| "Task-oriented bot with explicit intents (BookHotel, CheckWeather)" | **Lex** | Structured, intent-based (not autonomous agent) |
+| "Complex workflow with error handling, retries, parallel steps" | **Step Functions** | Deterministic orchestration |
+| "Agent needs to run A/B test with two different instruction sets" | **Create two versions, use two aliases** | Compare performance between versions |
 
 **5. Guardrails** `#exam-tip`
 
