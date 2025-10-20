@@ -7,8 +7,10 @@
 | Use Case | Service |
 |----------|---------|
 | Build custom ML models | SageMaker |
-| Pre-trained foundation models (LLMs, image gen) | Bedrock |
+| Pre-trained foundation models (LLMs, image gen) | Bedrock or JumpStart |
 | Chatbot, summarization, content generation | Bedrock |
+| Deploy open-source LLMs (Llama, Falcon) | JumpStart |
+| ML solution templates (fraud, churn) | JumpStart |
 | Text analysis (sentiment, entities) | Comprehend |
 | Text-to-speech | Polly |
 | Speech-to-text | Transcribe |
@@ -192,9 +194,11 @@ Accuracy = (TP + TN) / (TP + TN + FP + FN)
 | Gradient boosting on tabular data | XGBoost |
 | Time series with confidence intervals | DeepAR |
 | Translate languages | Seq2Seq (custom) or Translate (pre-trained) |
-| Generate text (chatbot, summarization) | Bedrock (Claude, Titan) |
-| Generate images from text | Bedrock (Stable Diffusion, Titan Image) |
+| Generate text (chatbot, summarization) | Bedrock (Claude, Titan) or JumpStart (Llama) |
+| Generate images from text | Bedrock (Stable Diffusion, Titan Image) or JumpStart |
 | Q&A over company documents | Bedrock + RAG or Q Business |
+| Quick fraud detection baseline | JumpStart solution template |
+| Deploy Llama 2 with full control | JumpStart |
 | Limited training data for image classification | Transfer learning (ResNet, VGG pre-trained) |
 | Reduce training cost | Transfer learning instead of from scratch |
 | 500 images for custom classification | Transfer learning (Feature Extraction) |
