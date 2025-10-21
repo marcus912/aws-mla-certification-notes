@@ -569,6 +569,566 @@ tf.summary.scalar('loss/validation', val_loss, step=epoch)
 - **"Organize/compare many experiments"** → SageMaker Experiments
 - **"Both together"** → Best practice for comprehensive ML workflow
 
+## ML Lineage Tracking `#important` `#exam-tip`
+
+**Purpose:** Automatically track complete data flow from raw data to deployed models, creating an audit trail for compliance, debugging, and reproducibility.
+
+**Key Concept:** Answer critical questions:
+- **Forward tracking:** "Which models/endpoints use this dataset?" (impact analysis)
+- **Backward tracking:** "Which data was used to train this production model?" (compliance, debugging)
+
+**Why It Matters for Exam:**
+- **Compliance:** GDPR, HIPAA, financial regulations require audit trails
+- **Model governance:** Track model provenance for regulatory approval
+- **Debugging:** Trace production issues back to training data
+- **Reproducibility:** Re-create models with exact data/code versions
+
+### What Is Tracked Automatically `#important`
+
+**Lineage Entities (Artifacts):**
+
+| Entity Type | Description | Examples |
+|------------|-------------|----------|
+| **Data Sources** | Input datasets | S3 objects, Athena tables, Feature Store feature groups |
+| **Processing Jobs** | Data transformations | SageMaker Processing, Glue jobs |
+| **Training Jobs** | Model training | SageMaker training jobs, Autopilot trials |
+| **Models** | Trained model artifacts | Model packages in Model Registry |
+| **Transform Jobs** | Batch inference | Batch Transform jobs |
+| **Endpoints** | Real-time inference | SageMaker endpoints |
+| **Pipeline Executions** | MLOps workflows | SageMaker Pipelines runs |
+| **Experiments/Trials** | Experiment tracking | SageMaker Experiments trials |
+
+**Relationships Tracked:**
+```
+Raw Data (S3)
+    ↓ (input to)
+Processing Job
+    ↓ (produces)
+Processed Data (S3)
+    ↓ (input to)
+Training Job
+    ↓ (produces)
+Model Artifact (S3)
+    ↓ (registered as)
+Model Package (Registry)
+    ↓ (deployed to)
+Endpoint (Production)
+```
+
+### How Lineage Tracking Works
+
+**Automatic Capture (No Code Changes):** `#exam-tip`
+
+SageMaker **automatically creates lineage** when you use SageMaker services:
+
+```python
+# No special code needed - lineage captured automatically
+from sagemaker.sklearn import SKLearn
+
+# 1. Training job (automatically tracked)
+estimator = SKLearn(
+    entry_point='train.py',
+    role=role,
+    instance_type='ml.m5.xlarge'
+)
+
+# Lineage automatically captures:
+# - Input data: s3://bucket/train.csv
+# - Training job ARN
+# - Output model: s3://bucket/model.tar.gz
+estimator.fit({'training': 's3://bucket/train.csv'})
+
+# 2. Register model (automatically tracked)
+from sagemaker.model import Model
+
+model = estimator.create_model()
+model_package = model.register(
+    model_package_group_name='fraud-detection',
+    approval_status='Approved'
+)
+# Lineage links: Training Job → Model Package
+
+# 3. Deploy endpoint (automatically tracked)
+predictor = model.deploy(
+    initial_instance_count=1,
+    instance_type='ml.m5.xlarge'
+)
+# Lineage links: Model Package → Endpoint
+```
+
+**Result:** Complete chain automatically created:
+```
+s3://bucket/train.csv → Training Job → s3://bucket/model.tar.gz → Model Package → Endpoint
+```
+
+**Manual Annotation (Custom Artifacts):** `#exam-tip`
+
+For custom workflows outside SageMaker:
+
+```python
+from sagemaker.lineage import context, artifact, association
+
+# Create custom artifact (e.g., external data source)
+input_artifact = artifact.Artifact.create(
+    artifact_name='external-database-export',
+    artifact_type='DataSet',
+    source_uri='rds://my-database/table/export-2025-01-15.csv',
+    properties={'rows': 1000000, 'features': 50}
+)
+
+# Create training context
+training_context = context.Context.create(
+    context_name='custom-training-job',
+    context_type='Training',
+    source_uri='arn:aws:custom-training:us-east-1:123456789012:job/abc'
+)
+
+# Link artifact to context (create association)
+association.Association.create(
+    source_arn=input_artifact.artifact_arn,
+    destination_arn=training_context.context_arn,
+    association_type='ContributedTo'
+)
+```
+
+**Use case:** Custom training outside SageMaker, external data sources, third-party tools
+
+### Querying Lineage `#important` `#exam-tip`
+
+**1. Forward Tracking (Impact Analysis)**
+
+**Question:** "If I update this dataset, which models will be affected?"
+
+```python
+from sagemaker.lineage.query import LineageQuery
+
+# Find all artifacts downstream from a dataset
+query = LineageQuery(sagemaker_session=session)
+
+# Start from dataset
+dataset_artifact_arn = 'arn:aws:sagemaker:region:account:artifact/dataset-v1'
+
+# Query forward (what uses this dataset?)
+lineage = query.query(
+    start_arns=[dataset_artifact_arn],
+    direction='Descendants',  # Forward tracking
+    include_edges=True
+)
+
+# Result: dataset → processing job → training job → model → endpoint
+for vertex in lineage.vertices:
+    print(f"{vertex.arn} ({vertex.lineage_type})")
+```
+
+**Output example:**
+```
+arn:aws:sagemaker:region:account:artifact/dataset-v1 (DataSet)
+    ↓
+arn:aws:sagemaker:region:account:processing-job/preprocess-123 (ProcessingJob)
+    ↓
+arn:aws:sagemaker:region:account:training-job/train-456 (TrainingJob)
+    ↓
+arn:aws:sagemaker:region:account:model-package/fraud-v1.0 (ModelPackage)
+    ↓
+arn:aws:sagemaker:region:account:endpoint/fraud-prod (Endpoint)
+```
+
+**Use case:** "Need to retrain all models if dataset changes"
+
+**2. Backward Tracking (Compliance, Debugging)** `#exam-tip`
+
+**Question:** "Which exact data was used to train this production model?"
+
+```python
+# Start from production endpoint
+endpoint_arn = 'arn:aws:sagemaker:region:account:endpoint/fraud-prod'
+
+# Query backward (what created this endpoint?)
+lineage = query.query(
+    start_arns=[endpoint_arn],
+    direction='Ascendants',  # Backward tracking
+    include_edges=True
+)
+
+# Result: endpoint → model → training job → dataset
+for vertex in lineage.vertices:
+    print(f"{vertex.arn} ({vertex.lineage_type})")
+    # Can access properties: creation_time, source_uri, etc.
+```
+
+**Output example:**
+```
+arn:aws:sagemaker:region:account:endpoint/fraud-prod (Endpoint)
+    ↑
+arn:aws:sagemaker:region:account:model-package/fraud-v1.0 (ModelPackage)
+    ↑
+arn:aws:sagemaker:region:account:training-job/train-456 (TrainingJob)
+    ↑
+arn:aws:sagemaker:region:account:artifact/train-data-2025-01-01.csv (DataSet)
+```
+
+**Use case:** Regulatory audit asks "Prove which data trained this model"
+
+**3. SageMaker Studio Lineage Graph** `#exam-tip`
+
+**Visual lineage in Studio UI:**
+1. Open SageMaker Studio
+2. Navigate to model or endpoint
+3. Click "Lineage" tab
+4. **Interactive graph** shows complete lineage:
+   - Click node to see details (hyperparameters, metrics, timestamps)
+   - Trace forward/backward visually
+   - Export graph for reports
+
+**Exam note:** Studio provides **no-code lineage exploration** for less technical users
+
+### Integration with Other Services `#exam-tip`
+
+**1. SageMaker Experiments**
+
+**How they work together:**
+- **Experiments track trials** (what you tried)
+- **Lineage tracks data flow** (what was used/produced)
+- **Link:** Each trial is a lineage entity
+
+```python
+# Experiment trial automatically has lineage
+with Run(experiment_name='fraud-detection', run_name='trial-1') as run:
+    estimator.fit(inputs)
+    # Lineage automatically links:
+    # Trial → Training Job → Data → Model
+```
+
+**Benefit:** Can query "Which trials used dataset X?" or "Which data did best trial use?"
+
+**2. Model Registry** `#important`
+
+**Lineage connects registry to training:**
+
+```python
+# Register model
+model_package = model.register(
+    model_package_group_name='fraud-detection',
+    approval_status='PendingManualApproval'
+)
+
+# Lineage automatically captured:
+# Training Job → Model Package (Registry)
+
+# Later, query which training job created this model package
+lineage = query.query(
+    start_arns=[model_package.model_package_arn],
+    direction='Ascendants'
+)
+# Returns: Training job, input data, hyperparameters, code version
+```
+
+**Compliance benefit:** Model Registry approval + Lineage = complete audit trail
+
+**3. SageMaker Pipelines** `#exam-tip`
+
+**Pipeline executions are lineage entities:**
+
+```python
+# Pipeline execution
+from sagemaker.workflow.pipeline import Pipeline
+
+pipeline = Pipeline(
+    name='fraud-detection-pipeline',
+    steps=[processing_step, training_step, register_step, deploy_step]
+)
+
+execution = pipeline.start()
+
+# Lineage automatically captures ENTIRE pipeline:
+# - Pipeline execution ARN
+# - Each step (processing, training, registration)
+# - Inputs/outputs at each step
+# - Final deployed endpoint
+
+# Query: "Which pipeline execution created this endpoint?"
+```
+
+**Benefit:** One lineage query traces back through entire MLOps workflow
+
+**4. Feature Store** `#exam-tip`
+
+**Feature groups are lineage entities:**
+
+```python
+# Training job uses feature group
+estimator.fit({
+    'training': 'arn:aws:sagemaker:region:account:feature-group/customer-features'
+})
+
+# Lineage automatically captures:
+# Feature Group → Training Job → Model
+
+# Query: "Which models use this feature?"
+# Query: "Which feature group versions trained this model?"
+```
+
+**Compliance benefit:** Track which features contributed to model decisions (GDPR, fairness)
+
+### Use Cases `#exam-tip`
+
+**1. Regulatory Compliance (GDPR, HIPAA, Finance)** `#important`
+
+**Requirement:** "Prove which patient data was used to train this diagnostic model"
+
+**Solution:**
+```python
+# Auditor asks about production model
+model_arn = 'arn:aws:sagemaker:region:account:model-package/diagnosis-v2.0'
+
+# Backward lineage query
+lineage = query.query(start_arns=[model_arn], direction='Ascendants')
+
+# Returns:
+# - Exact S3 paths of training data (with timestamps)
+# - Processing jobs (anonymization, masking applied)
+# - Training job (hyperparameters, code version from Git)
+# - Model evaluation metrics
+```
+
+**Result:** Complete audit trail showing data governance compliance
+
+**2. Model Debugging (Performance Issues)** `#exam-tip`
+
+**Problem:** "Production model accuracy dropped from 95% to 85%"
+
+**Solution:**
+```python
+# Trace back to find what changed
+endpoint_arn = 'arn:aws:sagemaker:region:account:endpoint/production'
+
+lineage = query.query(start_arns=[endpoint_arn], direction='Ascendants')
+
+# Discover:
+# - New model deployed 2 weeks ago
+# - Trained on updated dataset (data drift?)
+# - Different hyperparameters than previous version
+# - Can compare to old model's lineage
+```
+
+**Action:** Identify root cause (data quality issue, code bug, hyperparameter change)
+
+**3. Data Impact Analysis** `#important`
+
+**Scenario:** "Need to delete customer data due to GDPR request"
+
+**Question:** "Which models were trained on this customer's data?"
+
+**Solution:**
+```python
+# Customer ID 12345 in dataset s3://bucket/train-2024-12.csv
+dataset_arn = 'arn:aws:sagemaker:region:account:artifact/train-2024-12'
+
+# Forward lineage query
+lineage = query.query(start_arns=[dataset_arn], direction='Descendants')
+
+# Discover:
+# - 3 models trained on this data
+# - 2 deployed to production endpoints
+# - 1 in Model Registry (approved)
+```
+
+**Action:** Retrain/replace all affected models to comply with GDPR deletion
+
+**4. Model Reproducibility** `#exam-tip`
+
+**Requirement:** "Re-create exact model from 6 months ago for A/B test"
+
+**Solution:**
+```python
+# Find old model in registry
+old_model_arn = 'arn:aws:sagemaker:region:account:model-package/fraud-v1.0'
+
+lineage = query.query(start_arns=[old_model_arn], direction='Ascendants')
+
+# Lineage returns:
+# - Exact S3 path: s3://bucket/train-2024-07-15.csv
+# - Training job hyperparameters
+# - Code version (Git commit hash)
+# - Instance type used
+# - Processing steps applied
+
+# Re-run with EXACT same inputs → reproduce model
+```
+
+**5. Team Collaboration & Handoffs**
+
+**Scenario:** "Data scientist A leaves, data scientist B takes over model"
+
+**Solution:**
+```python
+# Data scientist B queries project lineage
+lineage = query.query(
+    start_arns=[model_arn],
+    direction='Both'  # Forward and backward
+)
+
+# Instantly understand:
+# - Which data sources used
+# - All processing steps
+# - Training configurations tried
+# - Current production deployments
+# - Downstream dependencies
+```
+
+**Benefit:** Reduce onboarding time, avoid breaking production
+
+### Lineage API Reference `#hands-on`
+
+**Key methods:**
+
+```python
+from sagemaker.lineage.query import LineageQuery
+from sagemaker.lineage import artifact, context, association
+
+# 1. Query lineage
+query = LineageQuery(sagemaker_session=session)
+lineage = query.query(
+    start_arns=['arn:aws:sagemaker:...'],
+    direction='Ascendants',  # or 'Descendants', 'Both'
+    include_edges=True  # Include relationships
+)
+
+# 2. Create custom artifact
+artifact.Artifact.create(
+    artifact_name='my-dataset',
+    artifact_type='DataSet',
+    source_uri='s3://bucket/data.csv',
+    properties={'version': '1.0', 'rows': 1000000}
+)
+
+# 3. Create context (grouping)
+context.Context.create(
+    context_name='my-training',
+    context_type='Training',
+    source_uri='arn:aws:sagemaker:region:account:training-job/abc'
+)
+
+# 4. Create association (link artifacts)
+association.Association.create(
+    source_arn=artifact_arn,
+    destination_arn=context_arn,
+    association_type='ContributedTo'  # or 'Produced', 'DerivedFrom'
+)
+
+# 5. List artifacts
+artifacts = artifact.Artifact.list(
+    source_uri='s3://bucket/data.csv',
+    sort_by='CreationTime',
+    sort_order='Descending'
+)
+```
+
+### Best Practices `#exam-tip`
+
+**1. Enable Automatic Lineage**
+- ✅ Use SageMaker services (automatic tracking)
+- ✅ No code changes needed for basic lineage
+- ❌ Don't disable lineage (always beneficial)
+
+**2. Annotate Custom Artifacts**
+```python
+# Add metadata to artifacts for better tracking
+artifact.Artifact.create(
+    artifact_name='customer-data-v2',
+    artifact_type='DataSet',
+    source_uri='s3://bucket/data.csv',
+    properties={
+        'version': '2.0',
+        'creation_date': '2025-01-15',
+        'rows': 1000000,
+        'features': 50,
+        'owner': 'data-team@company.com',
+        'pii_removed': 'true'  # Compliance flag
+    }
+)
+```
+
+**3. Query Lineage Regularly**
+- Before deploying: Check which data was used
+- After issues: Trace back to root cause
+- For audits: Generate lineage reports
+- For impact analysis: Check downstream dependencies
+
+**4. Integrate with Model Registry**
+- Always register models (creates lineage link)
+- Use approval workflow (adds governance)
+- Tag model packages with business metadata
+
+**5. Document External Artifacts**
+- For non-SageMaker data sources, create artifacts manually
+- Include source_uri for traceability
+- Add properties for context
+
+### Exam Scenarios `#important`
+
+| Scenario | Solution |
+|----------|----------|
+| "Track which data trained production model?" | **Backward lineage query** from endpoint |
+| "Find all models using specific dataset?" | **Forward lineage query** from dataset artifact |
+| "Comply with GDPR data deletion request?" | **Lineage** to find all models trained on that data |
+| "Reproduce model from 6 months ago?" | **Backward lineage** to get exact data/code/hyperparameters |
+| "Audit trail for regulatory compliance?" | **SageMaker Lineage** (automatic capture) |
+| "Debug production model performance drop?" | **Lineage** to compare current vs previous model inputs |
+| "Prove model fairness for audit?" | **Lineage + SageMaker Clarify** (track bias checks) |
+| "Which endpoints will break if I update this dataset?" | **Forward lineage** (impact analysis) |
+| "Visualize complete ML workflow?" | **SageMaker Studio Lineage Graph** |
+| "Track custom external data sources?" | **Manual artifact creation** + associations |
+
+### Lineage vs Experiments vs Model Registry `#exam-tip`
+
+**How they complement each other:**
+
+| Tool | Purpose | What It Tracks | When to Use |
+|------|---------|---------------|-------------|
+| **Lineage** | Data flow & provenance | Inputs → Transformations → Outputs | Compliance, debugging, impact analysis |
+| **Experiments** | Trial organization | Hyperparameters, metrics, comparisons | Hyperparameter tuning, team collaboration |
+| **Model Registry** | Production catalog | Approved models, versions, approvals | Deployment, governance, versioning |
+
+**Together they provide:**
+1. **Experiments:** Track all training attempts (good and bad)
+2. **Lineage:** Track data flow through best trial
+3. **Model Registry:** Catalog approved model from best trial
+4. **Complete story:** Experiment → Best Trial → Lineage → Registry → Production Endpoint
+
+### Limitations
+
+- **Lineage retention:** 120 days by default (can be extended with manual artifact creation)
+- **Query limits:** Max 100 entities per query result (pagination available)
+- **Custom artifacts:** Require manual creation (not automatic)
+- **Cross-region:** Lineage is region-specific (no cross-region tracking)
+
+### Pricing
+
+**Lineage tracking is FREE**
+- No additional charge for automatic lineage capture
+- Storage for lineage metadata included in SageMaker pricing
+- Manual artifact creation: Free (minimal storage cost)
+
+**Cost benefit:** Saves hours of manual documentation and debugging
+
+### Exam Tips `#important`
+
+**Key phrases that indicate lineage:**
+- ✅ "Track data provenance"
+- ✅ "Audit trail"
+- ✅ "Compliance requirement"
+- ✅ "Which data trained this model?"
+- ✅ "Impact analysis"
+- ✅ "Reproduce model"
+- ✅ "GDPR, HIPAA, regulatory"
+
+**Common exam patterns:**
+- **"Prove which data was used"** → Backward lineage query
+- **"Find affected models"** → Forward lineage query
+- **"Regulatory audit"** → SageMaker Lineage (automatic tracking)
+- **"Model reproducibility"** → Lineage + Experiments + Model Registry together
+
 ## Related Topics
 - [MLOps & Deployment](./mlops-deployment.md) - Deployment strategies, inference optimization
 - [MLOps CI/CD](./mlops-cicd.md) - Model Registry, Pipelines, Kubernetes

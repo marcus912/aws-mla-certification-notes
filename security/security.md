@@ -262,6 +262,99 @@ Security and compliance considerations for machine learning workloads on AWS.
 - **"Endpoint deployment failed"** → Check endpoint role has access to model artifacts in S3
 - **"Prevent data scientist from deleting production models"** → Remove `sagemaker:DeleteModel` from user policy
 
+### SageMaker Role Manager `#important` `#exam-tip`
+
+**Purpose:** Simplify IAM role creation for SageMaker with pre-configured, least-privilege role templates.
+
+**Why It Exists:**
+- Creating IAM roles manually is error-prone (missing permissions, overly permissive)
+- **Role Manager provides templates** with AWS-recommended permissions
+- **Implements least privilege** automatically
+- **Faster setup** - No need to write JSON policies from scratch
+
+**How It Works:**
+
+**1. ML Activities** (Task-based roles)
+Pre-configured roles for specific ML tasks:
+
+| ML Activity | Purpose | Permissions Included |
+|-------------|---------|---------------------|
+| **Training** | Train models | S3 read/write, ECR pull, CloudWatch logs, SageMaker training APIs |
+| **Processing** | Run processing jobs | S3 read/write, CloudWatch logs, SageMaker processing APIs |
+| **Inference** | Deploy endpoints | S3 read (model artifacts), CloudWatch logs, SageMaker endpoint APIs |
+| **Model Card Creation** | Create model documentation | SageMaker model card APIs, S3 read |
+
+**2. Personas** (User-based roles)
+Pre-configured roles for different user types:
+
+| Persona | Purpose | Permissions Included |
+|---------|---------|---------------------|
+| **Data Scientist** | Full ML experimentation | SageMaker Studio, training, experiments, endpoints (read-only production) |
+| **ML Ops Engineer** | Production deployment | Pipelines, Model Registry, production endpoints, monitoring |
+| **ML Business Analyst** | View-only access | Read-only SageMaker, view experiments, dashboards |
+
+**How to Use:** `#hands-on`
+
+```python
+import boto3
+
+sagemaker_client = boto3.client('sagemaker')
+
+# Create role for training using Role Manager
+response = sagemaker_client.create_role(
+    RoleName='MySageMakerTrainingRole',
+    RoleType='Training',  # Pre-configured training role
+    # Role Manager automatically adds required permissions
+)
+
+# Create role for specific persona
+response = sagemaker_client.create_role(
+    RoleName='DataScientistRole',
+    RoleType='DataScientist',
+    # Automatically includes Studio, training, experiment permissions
+)
+```
+
+**Benefits:** `#exam-tip`
+
+| Benefit | Description |
+|---------|-------------|
+| **Least Privilege** | Templates only include necessary permissions (no wildcards) |
+| **Pre-tested** | AWS-validated permission sets |
+| **Faster onboarding** | New data scientists get role in minutes |
+| **Consistency** | All training roles have same permissions (easier to manage) |
+| **Audit-friendly** | Standard roles easier to review for compliance |
+
+**Exam Scenarios:** `#exam-tip`
+
+| Scenario | Solution |
+|----------|----------|
+| "Quickly create role for training with least privilege" | **SageMaker Role Manager** with Training ML Activity |
+| "Standardize IAM roles across team" | **Role Manager personas** (Data Scientist, MLOps Engineer) |
+| "New data scientist needs Studio access" | **Role Manager Data Scientist persona** |
+| "Deploy endpoint with minimal permissions" | **Role Manager Inference ML Activity** |
+| "Reduce IAM configuration errors" | **Role Manager pre-configured templates** (not manual JSON) |
+
+**Role Manager vs Manual IAM:** `#exam-tip`
+
+| Aspect | Role Manager | Manual IAM |
+|--------|--------------|------------|
+| **Speed** | Seconds (select template) | Hours (write/test policies) |
+| **Least Privilege** | Automatic | Manual (error-prone) |
+| **Consistency** | Standardized | Varies by person |
+| **Exam** | **Preferred for standardization** | Use for custom requirements |
+
+**Best Practices:**
+1. **Use Role Manager for common scenarios** (training, inference, personas)
+2. **Customize if needed** - Start with template, add specific permissions
+3. **Apply to teams** - Standardize roles across organization
+4. **Review periodically** - AWS updates templates with new features
+
+**Exam Tip:** `#exam-tip`
+- **"Standardize IAM roles for SageMaker"** → SageMaker Role Manager
+- **"Reduce time to create least-privilege roles"** → Role Manager templates
+- **"New team member needs SageMaker access"** → Role Manager persona (Data Scientist)
+
 ### IAM MFA (Multi-Factor Authentication) `#exam-tip`
 
 **Purpose:** Add second factor of authentication (something you have + something you know).
