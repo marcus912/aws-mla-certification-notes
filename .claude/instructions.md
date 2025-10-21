@@ -16,9 +16,9 @@ This project contains study notes for the AWS Machine Learning Associate (MLA) c
 ### 0.5. README.md Update Rule `#critical`
 **MANDATORY: After ANY content update, you MUST review and update README.md**
 
-When you modify any content file (.md except README.md, CLAUDE.md, and guides/TEMPLATE.md):
-1. **Count total lines** - Run: `find . -name "*.md" -not -path "./README.md" -not -path "./CLAUDE.md" -not -path "./guides/TEMPLATE.md" | xargs wc -l`
-2. **Count exam tips** - Run: `find . -name "*.md" -not -path "./README.md" -not -path "./CLAUDE.md" -not -path "./guides/TEMPLATE.md" | xargs grep -o '#exam-tip' | wc -l`
+When you modify any content file (.md except README.md, CLAUDE.md, guides/TEMPLATE.md, and .claude/ folder):
+1. **Count total lines** - Run: `find . -name "*.md" -not -path "./README.md" -not -path "./CLAUDE.md" -not -path "./guides/TEMPLATE.md" -not -path "./.claude/*" | xargs wc -l`
+2. **Count exam tips** - Run: `find . -name "*.md" -not -path "./README.md" -not -path "./CLAUDE.md" -not -path "./guides/TEMPLATE.md" -not -path "./.claude/*" | xargs grep -o '#exam-tip' | wc -l`
 3. **Update README.md stats** - Update "Total Lines" and "Exam Tips" in Repository Stats section
 4. **Update structure** - If you added/removed files, update the Structure section
 5. **Update coverage** - If you added new algorithms/services, update the coverage lists
