@@ -268,8 +268,6 @@
 - Bayesian optimization
 - Max 750 training jobs per tuning job
 
-## Transfer Learning & Fine-Tuning `#important` `#exam-tip`
-
 ## Related Topics
 - [Amazon SageMaker](./sagemaker.md)
 - [SageMaker Training & Fine-Tuning](./sagemaker-training.md)

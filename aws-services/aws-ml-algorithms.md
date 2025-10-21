@@ -521,9 +521,9 @@ Comprehensive guide to SageMaker built-in algorithms. For detailed hyperparamete
 
 ## Anomaly Detection Algorithms
 
-## Random Cut Forest (RCF) `#important`
+### Random Cut Forest (RCF) `#important`
 
-### What Does Random Cut Forest Do?
+**What Does Random Cut Forest Do?**
 
 **Primary Purpose:** Anomaly detection - identifies unusual data points
 
@@ -541,14 +541,14 @@ Comprehensive guide to SageMaker built-in algorithms. For detailed hyperparamete
 - **Real-time capable** - Can score streaming data
 - **Robust to scale** - Handles different feature scales
 
-### Use Cases `#exam-tip`
+**Use Cases:** `#exam-tip`
 1. **Fraud detection** - Unusual transactions
 2. **Network security** - Detecting intrusions, DDoS attacks
 3. **IoT sensor monitoring** - Equipment failure prediction
 4. **Quality control** - Manufacturing defects
 5. **Time series anomalies** - Sudden spikes or drops
 
-### AWS Implementation
+**AWS Implementation:**
 
 **Amazon SageMaker RCF:**
 - Built-in algorithm in SageMaker
@@ -568,7 +568,7 @@ Comprehensive guide to SageMaker built-in algorithms. For detailed hyperparamete
 - ML Insights uses RCF for anomaly detection in visualizations
 - Automatic outlier highlighting
 
-### Example Scenario `#exam-tip`
+**Example Scenario:** `#exam-tip`
 **Question:** You need to detect fraudulent credit card transactions in real-time from streaming data. Which AWS service and algorithm?
 
 **Answer:**
@@ -576,7 +576,7 @@ Comprehensive guide to SageMaker built-in algorithms. For detailed hyperparamete
 - **Service:** Kinesis Data Analytics with RANDOM_CUT_FOREST() function
 - **Why:** Real-time streaming, unsupervised, detects unusual patterns
 
-### Training Details
+**Training Details:**
 - **Training:** Model learns normal data distribution
 - **Inference:** Scores new points against learned distribution
 - **No threshold needed during training** - Application sets threshold based on business rules

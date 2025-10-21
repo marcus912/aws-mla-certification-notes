@@ -403,24 +403,13 @@ SS_tot = Σ(y - ȳ)²   (total sum of squares)
 - **"Compare models on different datasets?"** → R² (unitless)
 - **"Training a regression model?"** → MSE (smooth optimization)
 
-## Common Challenges
+## Additional Topics
 
-### Overfitting `#gotcha`
-- Model too complex, memorizes training data
-- **Solutions:** Regularization (L1/L2), dropout, more data, cross-validation
-
-### Underfitting
-- Model too simple, poor performance on training data
-- **Solutions:** More features, more complex model, reduce regularization
-
-### Class Imbalance `#exam-tip`
-- Unequal distribution of classes
-- **Solutions:** SMOTE, class weights, under/over sampling
-
-## Bias-Variance Tradeoff
-- **High Bias** - Underfitting (too simple)
-- **High Variance** - Overfitting (too complex)
-- **Goal:** Balance both
+**See also:**
+- **Overfitting, Underfitting, Bias-Variance Tradeoff:** Covered in [Model Training & Evaluation](./model-training-evaluation.md#training-concepts)
+- **Class Imbalance, SMOTE:** Covered in [Feature Engineering](./feature-engineering.md#handling-class-imbalance)
+- **Regularization (L1/L2):** Covered in [Model Training & Evaluation](./model-training-evaluation.md#regularization)
+- **Loss Functions:** Covered in [Model Training & Evaluation](./model-training-evaluation.md#loss-functions)
 
 ## Related Topics
 - [Model Training & Evaluation](./model-training-evaluation.md)

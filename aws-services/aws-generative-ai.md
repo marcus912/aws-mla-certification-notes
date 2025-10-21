@@ -726,10 +726,6 @@ Agent: [Remembers all previous context]
 - **Bedrock:** Conversational AI with LLMs, open-ended conversations, RAG
 - **Lex:** Task-oriented bots with intents/slots, structured workflows
 
-### Bedrock vs SageMaker `#important`
-- **Bedrock:** Pre-trained foundation models, generative AI (text, images), no training needed
-- **SageMaker:** Custom ML models, any algorithm, train from scratch
-
 ## Exam Decision Framework `#important`
 
 | Scenario | Solution |

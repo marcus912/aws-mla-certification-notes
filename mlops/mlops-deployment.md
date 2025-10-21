@@ -279,47 +279,16 @@ graph LR
 
 ## Security & Compliance `#important`
 
-**📖 For comprehensive security coverage, see [Security](./security.md)**
+**Key deployment security considerations:**
+- **VPC mode** - Deploy endpoints in private subnets (see [Network Security](../security/security-network.md))
+- **Encryption** - Enable KMS encryption for model artifacts and data (see [Encryption](../security/security-encryption.md))
+- **IAM roles** - Use separate roles for training/inference with least privilege (see [Security](../security/security.md))
+- **Compliance** - HIPAA, PCI DSS, GDPR requirements via VPC + Encryption + Audit logging
 
-### Quick Security Checklist
-
-**Network Isolation:**
-- **VPC mode** - Training and inference in private subnets
-- **VPC endpoints** - S3 Gateway Endpoint (free), SageMaker Interface Endpoints
-- **Security groups** - Restrict inbound/outbound traffic
-- **NAT Gateway** - Outbound internet access (or use VPC Endpoints only)
-
-**Encryption:**
-- **At rest:** S3 (SSE-KMS), EBS (KMS), model artifacts (KMS)
-- **In transit:** TLS 1.2+ for all communications
-- **KMS keys** - Use customer-managed keys for compliance
-- **Inter-container encryption** - Enable for distributed training
-
-**Access Control:**
-- **IAM roles** - Separate roles for training, inference, users
-- **Least privilege** - Minimum permissions required
-- **Secrets Manager** - Store credentials, API keys
-- **MFA** - Enable for privileged users
-
-**Monitoring & Audit:**
-- **CloudTrail** - Log all API calls
-- **VPC Flow Logs** - Network traffic monitoring
-- **CloudWatch Logs** - Training/inference logs
-- **Macie** - PII discovery in S3
-
-**Compliance:**
-- **HIPAA eligible** - VPC + Encryption + BAA
-- **PCI DSS** - Encryption, audit logging
-- **GDPR** - Data anonymization, right to be forgotten
-- **Model governance** - Model Registry approval workflows
-
-**See [Security](./security.md) for details on:**
-- IAM policies, roles, MFA
-- VPC configuration (subnets, endpoints, peering, PrivateLink)
-- KMS encryption, key rotation
-- Data masking and anonymization
-- Macie, WAF, Shield
-- Complete security best practices
+**📖 For comprehensive security coverage:**
+- [Security](../security/security.md) - IAM, principles, Macie, WAF, Shield, compliance
+- [Encryption](../security/security-encryption.md) - KMS, Secrets Manager, at rest & in transit
+- [Network Security](../security/security-network.md) - VPC, security groups, endpoints, SageMaker VPC config
 
 ## Exam Scenarios Summary `#exam-tip`
 
