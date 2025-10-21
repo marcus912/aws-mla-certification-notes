@@ -179,6 +179,7 @@ Accuracy = (TP + TN) / (TP + TN + FP + FN)
 | Batch predictions | Batch Transform |
 | Multiple models, one endpoint | Multi-model Endpoints |
 | Data drift detection | Model Monitor |
+| Enable endpoint monitoring | Data Capture + Model Monitor |
 | Automate ML workflow | SageMaker Pipelines |
 | AutoML (no ML expertise) | SageMaker Autopilot |
 | Custom containers | Bring Your Own Container (BYOC) |

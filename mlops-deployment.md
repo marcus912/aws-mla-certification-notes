@@ -661,6 +661,85 @@ tf.summary.scalar('loss/validation', val_loss, step=epoch)
 ### SageMaker Model Monitor `#exam-tip`
 **Purpose:** Detect model and data quality issues in production
 
+### Data Capture `#exam-tip`
+**Purpose:** Capture inference requests and responses for Model Monitor analysis
+
+**Overview:**
+- **Prerequisite for Model Monitor** - Must enable data capture on endpoint before monitoring
+- Captures input payloads and model predictions in real-time
+- Stores captured data in S3 for later analysis
+- Required for all Model Monitor types (Data Quality, Model Quality, etc.)
+
+**Configuration:**
+```python
+DataCaptureConfig = {
+    'EnableCapture': True,
+    'InitialSamplingPercentage': 100,  # Capture 100% of requests (or lower for high-volume)
+    'DestinationS3Uri': 's3://bucket/data-capture',
+    'CaptureOptions': [
+        {'CaptureMode': 'Input'},   # Capture request payload
+        {'CaptureMode': 'Output'}   # Capture model predictions
+    ]
+}
+```
+
+**Key Parameters:**
+- **InitialSamplingPercentage** - % of requests to capture (1-100)
+  - Use 100% for low-volume endpoints
+  - Use 20-50% for high-volume to reduce storage costs
+- **CaptureMode** - What to capture:
+  - `Input` - Request payload sent to endpoint
+  - `Output` - Model predictions/responses
+  - Both - Recommended for full monitoring capability
+- **DestinationS3Uri** - S3 location for captured data
+
+**Captured Data Format:**
+```json
+{
+  "captureData": {
+    "endpointInput": {
+      "observedContentType": "text/csv",
+      "mode": "INPUT",
+      "data": "1.5,2.3,4.1,...",
+      "encoding": "CSV"
+    },
+    "endpointOutput": {
+      "observedContentType": "text/csv",
+      "mode": "OUTPUT",
+      "data": "0.92",
+      "encoding": "CSV"
+    }
+  },
+  "eventMetadata": {
+    "eventId": "unique-id",
+    "inferenceTime": "2025-01-15T10:30:00Z"
+  }
+}
+```
+
+**Storage Structure in S3:**
+```
+s3://bucket/data-capture/
+├── 2025/01/15/10/
+│   ├── request-1.jsonl
+│   ├── request-2.jsonl
+│   └── ...
+```
+- Organized by year/month/day/hour
+- JSONL format (one JSON object per line)
+
+**Exam Scenarios:** `#exam-tip`
+- **"Enable monitoring on endpoint"** → Must configure DataCaptureConfig first
+- **"High request volume, minimize storage costs"** → Lower InitialSamplingPercentage (20-50%)
+- **"Monitor both inputs and predictions"** → Capture both Input and Output modes
+- **"Data for baseline creation"** → Data Capture provides the production data
+
+**Common Gotchas:** `#gotcha`
+- Cannot enable data capture on existing endpoint - must update endpoint configuration
+- Captured data stored in S3 incurs storage costs
+- Data capture adds minimal latency (<1ms typically)
+- Must have both Input and Output capture for Model Quality monitoring
+
 **Monitoring Types:**
 
 #### 1. Data Quality Monitoring
