@@ -112,6 +112,8 @@
 - **SageMaker Serverless Inference** - Intermittent traffic
 - **Multi-model Endpoints** - Multiple models, one endpoint
 - **SageMaker Pipelines** - ML workflow orchestration
+- **SageMaker Operators for Kubernetes** - Orchestrate SageMaker from K8s/EKS
+- **SageMaker Components for Kubeflow** - Use SageMaker in Kubeflow Pipelines
 - **AWS Lambda** - Lightweight inference
 - **Amazon ECS/EKS** - Container orchestration
 
@@ -130,6 +132,8 @@
 - "Low-latency, real-time predictions?" → **SageMaker Endpoint**
 - "Multiple models, cost-effective deployment?" → **Multi-model Endpoints**
 - "Automate ML workflow?" → **SageMaker Pipelines**
+- "Team uses Kubernetes/EKS, want SageMaker?" → **SageMaker Operators for Kubernetes**
+- "Team uses Kubeflow Pipelines, want SageMaker training?" → **SageMaker Components for Kubeflow**
 
 ## Domain 4: Monitoring, Maintenance, and Security (24%)
 

@@ -181,6 +181,8 @@ Accuracy = (TP + TN) / (TP + TN + FP + FN)
 | Data drift detection | Model Monitor |
 | Enable endpoint monitoring | Data Capture + Model Monitor |
 | Automate ML workflow | SageMaker Pipelines |
+| Orchestrate SageMaker from Kubernetes | SageMaker Operators for Kubernetes |
+| Use SageMaker with Kubeflow Pipelines | SageMaker Components for Kubeflow |
 | AutoML (no ML expertise) | SageMaker Autopilot |
 | Custom containers | Bring Your Own Container (BYOC) |
 | Real-time anomaly detection | Kinesis Data Analytics + RCF |
