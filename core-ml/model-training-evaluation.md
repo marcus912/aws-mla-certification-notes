@@ -570,4 +570,4 @@ parent_tuning_jobs = [
 ## Related Topics
 - [Machine Learning Fundamentals](./ml-fundamentals.md)
 - [Feature Engineering](./feature-engineering.md)
-- [MLOps & Deployment](./mlops-deployment.md)
+- [MLOps & Deployment](../mlops/mlops-deployment.md)

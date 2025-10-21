@@ -317,5 +317,5 @@ Do you already use Kubernetes/EKS?
 - [MLOps & Deployment](./mlops-deployment.md) - Deployment strategies, inference optimization
 - [MLOps Experiments & Tracking](./mlops-experiments.md) - SageMaker Experiments, TensorBoard
 - [MLOps Monitoring](./mlops-monitoring.md) - Model Monitor, observability
-- [Amazon SageMaker](./sagemaker.md)
-- [Security](./security.md)
+- [Amazon SageMaker](../sagemaker/sagemaker.md)
+- [Security](../security/security.md)

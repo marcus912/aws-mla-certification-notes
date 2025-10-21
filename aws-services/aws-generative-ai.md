@@ -778,5 +778,5 @@ Agent: [Remembers all previous context]
 
 ## Related Topics
 - [AWS AI Services](./aws-ai-services.md) - Traditional pre-trained AI services
-- [Amazon SageMaker](./sagemaker.md) - Custom ML model building
-- [Cheat Sheet](./cheat-sheet.md) - Quick reference
+- [Amazon SageMaker](../sagemaker/sagemaker.md) - Custom ML model building
+- [Cheat Sheet](../guides/cheat-sheet.md) - Quick reference

@@ -254,5 +254,5 @@ db_connection = connect_to_db(password=db_password)
 ## Related Topics
 - [AWS Security](./security.md) - Core security principles and IAM
 - [Network Security](./security-network.md) - VPC, security groups, VPC endpoints
-- [Amazon SageMaker](./sagemaker.md) - ML service implementation
-- [Data Services](./data-services.md) - Data pipeline security
+- [Amazon SageMaker](../sagemaker/sagemaker.md) - ML service implementation
+- [Data Services](../aws-services/data-services.md) - Data pipeline security

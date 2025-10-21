@@ -118,5 +118,5 @@ Techniques for preparing, transforming, and creating features from raw data for 
 
 ## Related Topics
 - [Machine Learning Fundamentals](./ml-fundamentals.md)
-- [Data Services](./data-services.md)
+- [Data Services](../aws-services/data-services.md)
 - [Model Training & Evaluation](./model-training-evaluation.md)

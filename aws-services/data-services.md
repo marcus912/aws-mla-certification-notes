@@ -438,6 +438,6 @@ Result: Users only see rows where region='US-WEST'
 | Secure data lake | AWS Lake Formation |
 
 ## Related Topics
-- [Feature Engineering](./feature-engineering.md)
-- [Amazon SageMaker](./sagemaker.md)
+- [Feature Engineering](../core-ml/feature-engineering.md)
+- [Amazon SageMaker](../sagemaker/sagemaker.md)
 - [AWS ML Algorithms](./aws-ml-algorithms.md)

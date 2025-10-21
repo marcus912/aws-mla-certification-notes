@@ -573,5 +573,5 @@ tf.summary.scalar('loss/validation', val_loss, step=epoch)
 - [MLOps & Deployment](./mlops-deployment.md) - Deployment strategies, inference optimization
 - [MLOps CI/CD](./mlops-cicd.md) - Model Registry, Pipelines, Kubernetes
 - [MLOps Monitoring](./mlops-monitoring.md) - Model Monitor, observability
-- [Amazon SageMaker](./sagemaker.md)
-- [Model Training & Evaluation](./model-training-evaluation.md)
+- [Amazon SageMaker](../sagemaker/sagemaker.md)
+- [Model Training & Evaluation](../core-ml/model-training-evaluation.md)

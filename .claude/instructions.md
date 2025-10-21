@@ -16,9 +16,9 @@ This project contains study notes for the AWS Machine Learning Associate (MLA) c
 ### 0.5. README.md Update Rule `#critical`
 **MANDATORY: After ANY content update, you MUST review and update README.md**
 
-When you modify any content file (.md except README.md and TEMPLATE.md):
-1. **Count total lines** - Run: `ls *.md | grep -v README.md | grep -v TEMPLATE.md | xargs wc -l`
-2. **Count exam tips** - Run: `ls *.md | grep -v README.md | grep -v TEMPLATE.md | xargs grep -o '#exam-tip' | wc -l`
+When you modify any content file (.md except README.md, CLAUDE.md, and guides/TEMPLATE.md):
+1. **Count total lines** - Run: `find . -name "*.md" -not -path "./README.md" -not -path "./CLAUDE.md" -not -path "./guides/TEMPLATE.md" | xargs wc -l`
+2. **Count exam tips** - Run: `find . -name "*.md" -not -path "./README.md" -not -path "./CLAUDE.md" -not -path "./guides/TEMPLATE.md" | xargs grep -o '#exam-tip' | wc -l`
 3. **Update README.md stats** - Update "Total Lines" and "Exam Tips" in Repository Stats section
 4. **Update structure** - If you added/removed files, update the Structure section
 5. **Update coverage** - If you added new algorithms/services, update the coverage lists
@@ -111,13 +111,22 @@ When user provides keywords or topics:
 ### 10. File Management
 - **Don't create redundant files** - Consolidate related topics
 - **Use descriptive filenames** - kebab-case, clear purpose (e.g., `sagemaker-clarify.md`)
-- **Keep TEMPLATE.md updated** - Reflect any structural changes
+- **Organize in folders** - Place files in appropriate folders: core-ml/, sagemaker/, aws-services/, mlops/, security/, guides/
+- **Keep guides/TEMPLATE.md updated** - Reflect any structural changes
 - **Maintain README.md** - **See Rule 0.5** - MUST update after every content change
-- **Update cheat-sheet.md** - Add new concepts to quick reference
+- **Update guides/cheat-sheet.md** - Add new concepts to quick reference
 
 ### 11. Autonomous Content Reorganization `#important`
 
 **You HAVE PERMISSION to reorganize notes proactively** when it improves clarity and structure.
+
+**Current Folder Structure:**
+- `core-ml/` - ML fundamentals (3 files)
+- `sagemaker/` - SageMaker services (5 files)
+- `aws-services/` - AWS AI/ML services (4 files)
+- `mlops/` - MLOps workflows (4 files)
+- `security/` - Security topics (3 files)
+- `guides/` - Study resources (3 files: study-guide.md, cheat-sheet.md, TEMPLATE.md)
 
 #### When to Reorganize (Do it proactively)
 
@@ -126,6 +135,7 @@ When user provides keywords or topics:
 - New AWS service/concept needs dedicated coverage
 - Multiple files reference the same complex concept repeatedly
 - Content becomes too diverse for current file (e.g., mixing algorithms with deployment)
+- **Place new files in the appropriate folder** based on topic
 
 **Rename note files when:**
 - Current name no longer reflects the content (e.g., file grew to cover more topics)
@@ -164,10 +174,11 @@ When user provides keywords or topics:
 
 **Always do:**
 - [ ] Search and replace all cross-reference links (use Grep tool)
-- [ ] Update "Related Topics" sections in all affected files
+- [ ] Update "Related Topics" sections in all affected files (use ../folder/ for cross-folder links)
 - [ ] Update README.md Structure section
 - [ ] Update README.md stats (line count, file count)
 - [ ] Verify no broken links remain
+- [ ] Ensure files are in correct folders
 - [ ] Ensure consistent tagging across reorganized content
 
 **Never do:**
@@ -180,37 +191,37 @@ When user provides keywords or topics:
 
 **Example 1: Creating new file**
 ```
-Situation: sagemaker.md has 600 lines, including 150 lines on SageMaker Pipelines
-Action: Create mlops-pipelines.md, move Pipelines content there
-Rationale: MLOps deserves dedicated file, sagemaker.md more focused on training
-Update: Fix cross-references, update README.md structure
+Situation: sagemaker/sagemaker.md has 600 lines, including 150 lines on SageMaker Pipelines
+Action: Create mlops/mlops-pipelines.md, move Pipelines content there
+Rationale: MLOps deserves dedicated file in mlops/ folder
+Update: Fix cross-references (../mlops/mlops-pipelines.md), update README.md structure
 ```
 
 **Example 2: Moving content**
 ```
 Situation: Regularization concepts scattered across 3 files
-Action: Consolidate all regularization content into model-training-evaluation.md
+Action: Consolidate all regularization content into core-ml/model-training-evaluation.md
 Rationale: Single source of truth for regularization concepts
-Update: Remove from other files, add cross-references
+Update: Remove from other files, add cross-references using ../core-ml/ paths
 ```
 
 **Example 3: Splitting file**
 ```
-Situation: aws-ai-services.md is 800 lines covering 16 services
+Situation: aws-services/aws-ai-services.md is 800 lines covering 16 services
 Action: Split into:
-  - aws-ai-services-nlp.md (NLP services)
-  - aws-ai-services-vision.md (Vision services)
-  - aws-ai-services-other.md (Remaining services)
-Rationale: Easier navigation, grouped by use case
-Update: Create 3 files, update all cross-references, update README.md
+  - aws-services/aws-ai-services-nlp.md (NLP services)
+  - aws-services/aws-ai-services-vision.md (Vision services)
+  - aws-services/aws-ai-services-other.md (Remaining services)
+Rationale: Easier navigation, grouped by use case, all in aws-services/ folder
+Update: Create 3 files, update all cross-references (same folder = ./), update README.md
 ```
 
-**Example 4: Renaming file**
+**Example 4: Moving to correct folder**
 ```
-Situation: deployment.md now covers MLOps topics beyond just deployment
-Action: Rename deployment.md → mlops-deployment.md
-Rationale: Name better reflects expanded scope
-Update: Search all files for "deployment.md" links, replace with "mlops-deployment.md"
+Situation: New file deployment.md created in root
+Action: Move to mlops/mlops-deployment.md (correct folder)
+Rationale: MLOps content belongs in mlops/ folder
+Update: Search all files for "deployment.md" links, replace with "../mlops/mlops-deployment.md"
 ```
 
 #### Decision Framework
@@ -272,15 +283,15 @@ If unsure → Propose to user first: "I suggest reorganizing X because Y. Procee
 
 ### When user asks: "Add notes about [keyword]"
 1. Read existing related files
-2. Determine best location for content
+2. Determine best location for content **and appropriate folder**
 3. **Check if reorganization needed (Rule 11):**
    - Would new content exceed 500 lines in target file? → Consider split
-   - Does keyword deserve its own file? → Create new file
+   - Does keyword deserve its own file? → Create new file in appropriate folder
    - Is content scattered across files? → Consolidate first
-4. Create or update appropriate file(s)
-5. Add cross-references
+4. Create or update appropriate file(s) in correct folder
+5. Add cross-references (use ../folder/ for cross-folder links)
 6. **MANDATORY: Count lines and exam tips, update README.md (Rule 0.5)**
-7. Update cheat-sheet.md if needed
+7. Update guides/cheat-sheet.md if needed
 8. Confirm changes to user with file locations and updated stats
 
 ### When user asks: "Explain [concept]"

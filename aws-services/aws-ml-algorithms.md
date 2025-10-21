@@ -731,6 +731,6 @@ Comprehensive guide to SageMaker built-in algorithms. For detailed hyperparamete
   - Can't invert transformation perfectly
 
 ## Related Topics
-- [Amazon SageMaker](./sagemaker.md)
+- [Amazon SageMaker](../sagemaker/sagemaker.md)
 - [Data Services](./data-services.md)
-- [Model Training & Evaluation](./model-training-evaluation.md)
+- [Model Training & Evaluation](../core-ml/model-training-evaluation.md)

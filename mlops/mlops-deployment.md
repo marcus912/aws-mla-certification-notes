@@ -337,8 +337,8 @@ graph LR
 - [MLOps Experiments & Tracking](./mlops-experiments.md) - SageMaker Experiments, TensorBoard
 - [MLOps CI/CD](./mlops-cicd.md) - Model Registry, Pipelines, Kubernetes
 - [MLOps Monitoring](./mlops-monitoring.md) - Model Monitor, observability, cost optimization
-- [Security](./security.md) - Comprehensive security coverage
-- [Amazon SageMaker](./sagemaker.md)
-- [Model Training & Evaluation](./model-training-evaluation.md)
-- [SageMaker Clarify](./sagemaker-clarify.md)
-- [Data Services](./data-services.md)
+- [Security](../security/security.md) - Comprehensive security coverage
+- [Amazon SageMaker](../sagemaker/sagemaker.md)
+- [Model Training & Evaluation](../core-ml/model-training-evaluation.md)
+- [SageMaker Clarify](../sagemaker/sagemaker-clarify.md)
+- [Data Services](../aws-services/data-services.md)

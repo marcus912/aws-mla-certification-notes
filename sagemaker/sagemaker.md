@@ -77,10 +77,10 @@ Fully managed ML service for building, training, and deploying models at scale.
 - [SageMaker Hyperparameters](./sagemaker-hyperparameters.md) - Algorithm hyperparameters in detail
 - [SageMaker Training & Fine-Tuning](./sagemaker-training.md) - Transfer learning, fine-tuning
 - [SageMaker JumpStart](./sagemaker-jumpstart.md) - Pre-built models and solutions
-- [MLOps & Deployment](./mlops-deployment.md) - Deployment strategies
-- [MLOps CI/CD](./mlops-cicd.md) - Pipelines, Model Registry
-- [MLOps Experiments](./mlops-experiments.md) - Experiments, TensorBoard
-- [MLOps Monitoring](./mlops-monitoring.md) - Model Monitor
-- [Model Training & Evaluation](./model-training-evaluation.md)
-- [AWS ML Algorithms](./aws-ml-algorithms.md)
+- [MLOps & Deployment](../mlops/mlops-deployment.md) - Deployment strategies
+- [MLOps CI/CD](../mlops/mlops-cicd.md) - Pipelines, Model Registry
+- [MLOps Experiments](../mlops/mlops-experiments.md) - Experiments, TensorBoard
+- [MLOps Monitoring](../mlops/mlops-monitoring.md) - Model Monitor
+- [Model Training & Evaluation](../core-ml/model-training-evaluation.md)
+- [AWS ML Algorithms](../aws-services/aws-ml-algorithms.md)
 - [SageMaker Clarify](./sagemaker-clarify.md)

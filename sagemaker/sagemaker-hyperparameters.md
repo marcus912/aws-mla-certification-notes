@@ -273,5 +273,5 @@
 ## Related Topics
 - [Amazon SageMaker](./sagemaker.md)
 - [SageMaker Training & Fine-Tuning](./sagemaker-training.md)
-- [AWS ML Algorithms](./aws-ml-algorithms.md)
-- [Model Training & Evaluation](./model-training-evaluation.md)
+- [AWS ML Algorithms](../aws-services/aws-ml-algorithms.md)
+- [Model Training & Evaluation](../core-ml/model-training-evaluation.md)

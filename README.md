@@ -17,40 +17,40 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 ## 🎯 Quick Start
 
 **New to this repository?** Start here:
-1. 📝 Read the [Study Guide](./study-guide.md) for exam overview and 10-week study plan
-2. ⚡ Bookmark the [Cheat Sheet](./cheat-sheet.md) for quick reference
+1. 📝 Read the [Study Guide](./guides/study-guide.md) for exam overview and 10-week study plan
+2. ⚡ Bookmark the [Cheat Sheet](./guides/cheat-sheet.md) for quick reference
 3. 📚 Work through topics in the [Structure](#structure) section below
 4. ✅ Track your progress using the [Study Progress](#study-progress) checklist
 
 ## Structure
 
 ### Core ML Concepts
-- [Machine Learning Fundamentals](./ml-fundamentals.md)
-- [Model Training & Evaluation](./model-training-evaluation.md)
-- [Feature Engineering](./feature-engineering.md)
+- [Machine Learning Fundamentals](./core-ml/ml-fundamentals.md)
+- [Model Training & Evaluation](./core-ml/model-training-evaluation.md)
+- [Feature Engineering](./core-ml/feature-engineering.md)
 
 ### AWS ML/AI Services
-- [Amazon SageMaker](./sagemaker.md) - Custom ML model building
-  - [Hyperparameters](./sagemaker-hyperparameters.md) - Algorithm hyperparameters in detail
-  - [Training & Fine-Tuning](./sagemaker-training.md) - Transfer learning, fine-tuning
-  - [JumpStart](./sagemaker-jumpstart.md) - Pre-built models and solutions
-- [SageMaker Clarify](./sagemaker-clarify.md) - Bias & Explainability
-- [AWS ML Algorithms](./aws-ml-algorithms.md) - All 17 SageMaker built-in algorithms
-- [AWS AI Services](./aws-ai-services.md) - Comprehend, Rekognition, Lex, Textract, Kendra, Personalize
-- [AWS Generative AI](./aws-generative-ai.md) - Bedrock, Amazon Q (foundation models & LLMs)
-- [Data Services](./data-services.md) - S3, Glue, Athena, EMR, Kinesis, Lake Formation, Ground Truth
-- [MLOps & Deployment](./mlops-deployment.md) - Deployment strategies, inference optimization
-  - [Experiments & Tracking](./mlops-experiments.md) - SageMaker Experiments, TensorBoard
-  - [CI/CD](./mlops-cicd.md) - Model Registry, Pipelines, Kubernetes
-  - [Monitoring](./mlops-monitoring.md) - Model Monitor, observability, cost optimization
-- [Security](./security.md) - IAM, core principles, security services, best practices
-  - [Encryption](./security-encryption.md) - KMS, Secrets Manager, encryption at rest & in transit
-  - [Network Security](./security-network.md) - VPC, security groups, endpoints, SageMaker VPC config
+- [Amazon SageMaker](./sagemaker/sagemaker.md) - Custom ML model building
+  - [Hyperparameters](./sagemaker/sagemaker-hyperparameters.md) - Algorithm hyperparameters in detail
+  - [Training & Fine-Tuning](./sagemaker/sagemaker-training.md) - Transfer learning, fine-tuning
+  - [JumpStart](./sagemaker/sagemaker-jumpstart.md) - Pre-built models and solutions
+- [SageMaker Clarify](./sagemaker/sagemaker-clarify.md) - Bias & Explainability
+- [AWS ML Algorithms](./aws-services/aws-ml-algorithms.md) - All 17 SageMaker built-in algorithms
+- [AWS AI Services](./aws-services/aws-ai-services.md) - Comprehend, Rekognition, Lex, Textract, Kendra, Personalize
+- [AWS Generative AI](./aws-services/aws-generative-ai.md) - Bedrock, Amazon Q (foundation models & LLMs)
+- [Data Services](./aws-services/data-services.md) - S3, Glue, Athena, EMR, Kinesis, Lake Formation, Ground Truth
+- [MLOps & Deployment](./mlops/mlops-deployment.md) - Deployment strategies, inference optimization
+  - [Experiments & Tracking](./mlops/mlops-experiments.md) - SageMaker Experiments, TensorBoard
+  - [CI/CD](./mlops/mlops-cicd.md) - Model Registry, Pipelines, Kubernetes
+  - [Monitoring](./mlops/mlops-monitoring.md) - Model Monitor, observability, cost optimization
+- [Security](./security/security.md) - IAM, core principles, security services, best practices
+  - [Encryption](./security/security-encryption.md) - KMS, Secrets Manager, encryption at rest & in transit
+  - [Network Security](./security/security-network.md) - VPC, security groups, endpoints, SageMaker VPC config
 
 ### Quick References
-- [📝 Study Guide](./study-guide.md) - **START HERE!** Exam strategy & roadmap
-- [⚡ Cheat Sheet](./cheat-sheet.md) - Quick reference tables
-- [📋 Template](./TEMPLATE.md) - Template for creating new notes
+- [📝 Study Guide](./guides/study-guide.md) - **START HERE!** Exam strategy & roadmap
+- [⚡ Cheat Sheet](./guides/cheat-sheet.md) - Quick reference tables
+- [📋 Template](./guides/TEMPLATE.md) - Template for creating new notes
 
 ## Study Progress
 
@@ -117,12 +117,10 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 ## 🤝 Contributing
 
 Contributions are welcome! To maintain consistency:
-1. Follow the format in [TEMPLATE.md](./TEMPLATE.md)
+1. Follow the format in [TEMPLATE.md](./guides/TEMPLATE.md)
 2. Keep notes brief and exam-focused
 3. Use appropriate tags (`#core`, `#exam-tip`, `#hands-on`, `#gotcha`, `#important`)
 4. Update cross-references when adding new content
-
-**For AI Assistants:** See [`.claude/instructions.md`](./.claude/instructions.md) for detailed guidelines on maintaining these notes.
 
 ## 📝 Usage
 
@@ -130,48 +128,49 @@ Contributions are welcome! To maintain consistency:
 - Browse topics by category in the [Structure](#structure) section
 - Use search (Ctrl/Cmd + F) to find specific keywords
 - Check off items in [Study Progress](#study-progress) as you learn
-- Review [Cheat Sheet](./cheat-sheet.md) before exam day
+- Review [Cheat Sheet](./guides/cheat-sheet.md) before exam day
 
 **For AI-Assisted Study:**
 - Provide keywords or topics, and AI will organize/update notes accordingly
 - Example: "Add notes about AWS Forecast" or "Explain concept drift"
-- AI follows guidelines in `.claude/instructions.md` for consistency
+- AI follows guidelines in `CLAUDE.md` for consistency
 
 ## 📂 Project Structure
 
 ```
 aws-mla-certification-notes/
-├── .claude/
-│   └── CLAUDE.md                      # Repository guidance for AI
+├── CLAUDE.md                          # Repository guidance for AI
 │
-├── Core ML Concepts
+├── core-ml/                           # Core ML Concepts
 │   ├── ml-fundamentals.md
 │   ├── model-training-evaluation.md
 │   └── feature-engineering.md
 │
-├── AWS ML/AI Services
+├── sagemaker/                         # Amazon SageMaker
 │   ├── sagemaker.md                   # SageMaker hub
-│   │   ├── sagemaker-hyperparameters.md
-│   │   ├── sagemaker-training.md
-│   │   └── sagemaker-jumpstart.md
-│   ├── sagemaker-clarify.md
+│   ├── sagemaker-hyperparameters.md
+│   ├── sagemaker-training.md
+│   ├── sagemaker-jumpstart.md
+│   └── sagemaker-clarify.md
+│
+├── aws-services/                      # AWS ML/AI Services
 │   ├── aws-ml-algorithms.md
 │   ├── aws-ai-services.md
 │   ├── aws-generative-ai.md
 │   └── data-services.md
 │
-├── MLOps & Deployment
+├── mlops/                             # MLOps & Deployment
 │   ├── mlops-deployment.md            # Deployment hub
 │   ├── mlops-experiments.md
 │   ├── mlops-cicd.md
 │   └── mlops-monitoring.md
 │
-├── Security
+├── security/                          # Security
 │   ├── security.md                    # Security hub
 │   ├── security-encryption.md
 │   └── security-network.md
 │
-├── Quick References
+├── guides/                            # Quick References
 │   ├── study-guide.md                 # START HERE!
 │   ├── cheat-sheet.md                 # Quick reference
 │   └── TEMPLATE.md                    # Template

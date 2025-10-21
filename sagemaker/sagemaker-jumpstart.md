@@ -292,6 +292,6 @@ predictor = estimator.deploy()
 
 ## Related Topics
 - [Amazon SageMaker](./sagemaker.md)
-- [AWS Generative AI](./aws-generative-ai.md) - Bedrock comparison
+- [AWS Generative AI](../aws-services/aws-generative-ai.md) - Bedrock comparison
 - [SageMaker Training & Fine-Tuning](./sagemaker-training.md)
-- [Model Training & Evaluation](./model-training-evaluation.md)
+- [Model Training & Evaluation](../core-ml/model-training-evaluation.md)

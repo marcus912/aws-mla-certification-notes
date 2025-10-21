@@ -464,7 +464,7 @@ Security and compliance considerations for machine learning workloads on AWS.
 ## Related Topics
 - [Encryption](./security-encryption.md) - Encryption at rest, in transit, KMS, Secrets Manager
 - [Network Security](./security-network.md) - VPC, security groups, endpoints, SageMaker VPC config
-- [MLOps & Deployment](./mlops-deployment.md) - Secure deployment patterns
-- [Amazon SageMaker](./sagemaker.md) - ML service security features
-- [Data Services](./data-services.md) - Data pipeline security
-- [AWS AI Services](./aws-ai-services.md) - AI service security
+- [MLOps & Deployment](../mlops/mlops-deployment.md) - Secure deployment patterns
+- [Amazon SageMaker](../sagemaker/sagemaker.md) - ML service security features
+- [Data Services](../aws-services/data-services.md) - Data pipeline security
+- [AWS AI Services](../aws-services/aws-ai-services.md) - AI service security

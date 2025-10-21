@@ -158,6 +158,6 @@ Bias in model predictions after training.
 - SHAP computation can be expensive for large models
 
 ## Related Topics
-- [Model Training & Evaluation](./model-training-evaluation.md)
-- [MLOps & Deployment](./mlops-deployment.md)
+- [Model Training & Evaluation](../core-ml/model-training-evaluation.md)
+- [MLOps & Deployment](../mlops/mlops-deployment.md)
 - [Amazon SageMaker](./sagemaker.md)

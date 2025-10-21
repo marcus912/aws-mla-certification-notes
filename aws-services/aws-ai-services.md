@@ -496,6 +496,6 @@ Pre-trained AI/ML services that don't require ML expertise. Ready-to-use APIs fo
 
 ## Related Topics
 - [AWS Generative AI & Foundation Models](./aws-generative-ai.md) - Bedrock, Amazon Q
-- [Amazon SageMaker](./sagemaker.md) - Custom ML model building
+- [Amazon SageMaker](../sagemaker/sagemaker.md) - Custom ML model building
 - [Data Services](./data-services.md) - Data preparation and storage
-- [Cheat Sheet](./cheat-sheet.md) - Quick reference
+- [Cheat Sheet](../guides/cheat-sheet.md) - Quick reference

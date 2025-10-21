@@ -309,6 +309,6 @@ s3://bucket/data-capture/
 - [MLOps & Deployment](./mlops-deployment.md) - Deployment strategies, inference optimization
 - [MLOps Experiments & Tracking](./mlops-experiments.md) - SageMaker Experiments, TensorBoard
 - [MLOps CI/CD](./mlops-cicd.md) - Model Registry, Pipelines, Kubernetes
-- [Amazon SageMaker](./sagemaker.md)
-- [SageMaker Clarify](./sagemaker-clarify.md) - Bias detection
-- [Security](./security.md) - Security best practices
+- [Amazon SageMaker](../sagemaker/sagemaker.md)
+- [SageMaker Clarify](../sagemaker/sagemaker-clarify.md) - Bias detection
+- [Security](../security/security.md) - Security best practices
