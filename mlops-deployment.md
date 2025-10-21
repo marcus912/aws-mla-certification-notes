@@ -7,6 +7,68 @@ ML Operations (MLOps) - practices for deploying, monitoring, and maintaining ML 
 
 ## Deployment Strategies `#exam-tip`
 
+### Deployment Strategy Comparison Flow
+
+```mermaid
+graph TB
+    A[Need to Deploy Model] --> B{Traffic<br/>Pattern?}
+
+    B -->|Continuous<br/>Predictable| C[Real-time Endpoint]
+    B -->|Intermittent<br/>Unpredictable| D[Serverless Inference]
+    B -->|Batch Processing<br/>Scheduled| E[Batch Transform]
+
+    C --> F{Deployment<br/>Strategy?}
+
+    F -->|All at Once| G[Replace Old Model<br/>⚠️ Downtime Risk]
+    F -->|Blue/Green| H[Deploy New<br/>Switch Traffic<br/>✅ Rollback Ready]
+    F -->|Canary| I[5% → 25% → 50% → 100%<br/>✅ Risk Mitigation]
+    F -->|A/B Testing| J[50/50 Split<br/>Compare Performance]
+
+    D --> K{Constraints?}
+    K -->|Payload < 4MB<br/>Time < 60s| L[✅ Use Serverless<br/>$0 idle cost]
+    K -->|Payload > 4MB<br/>OR Time > 60s| M[❌ Use Endpoint<br/>or Batch]
+
+    E --> N[S3 Input → Process → S3 Output<br/>No Persistent Endpoint<br/>$ Only during job]
+
+    style C fill:#e1f5ff
+    style D fill:#fff4e1
+    style E fill:#e1ffe1
+    style I fill:#d4f4dd
+    style L fill:#d4f4dd
+    style M fill:#ffcccc
+    style G fill:#ffe1e1
+```
+
+### Canary vs A/B Testing Flow
+
+```mermaid
+graph LR
+    subgraph "Canary Deployment - Risk Mitigation"
+        A1[Old Model v1.0<br/>95% traffic] --> B1[Monitor Metrics]
+        A2[New Model v2.0<br/>5% traffic] --> B1
+        B1 --> C1{Safe?}
+        C1 -->|Yes| D1[Increase to 25%]
+        C1 -->|No| E1[Rollback to v1.0]
+        D1 --> F1{Still Safe?}
+        F1 -->|Yes| G1[50% → 100%]
+        F1 -->|No| E1
+    end
+
+    subgraph "A/B Testing - Comparison"
+        A3[Model A<br/>50% traffic] --> B3[Collect Metrics]
+        A4[Model B<br/>50% traffic] --> B3
+        B3 --> C3[Compare:<br/>Accuracy, Latency<br/>Business KPIs]
+        C3 --> D3{Winner?}
+        D3 -->|A Better| E3[Deploy A to 100%]
+        D3 -->|B Better| F3[Deploy B to 100%]
+    end
+
+    style A2 fill:#fff4e1
+    style A4 fill:#e1f5ff
+    style E1 fill:#ffcccc
+    style G1 fill:#d4f4dd
+```
+
 ### Real-time Inference (SageMaker Endpoints)
 **Purpose:** Low-latency predictions for individual requests
 

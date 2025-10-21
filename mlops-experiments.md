@@ -23,6 +23,99 @@ Experiment
       └── ...
 ```
 
+### SageMaker Experiments Workflow
+
+```mermaid
+graph TB
+    subgraph "Experiment Setup"
+        A[Create Experiment<br/>'fraud-detection-v2'] --> B[Define Search Space<br/>Learning Rate: 0.001-0.1<br/>Batch Size: 32-256]
+    end
+
+    subgraph "Trial Execution - Multiple Runs"
+        B --> C1[Trial 1: lr=0.001, batch=32]
+        B --> C2[Trial 2: lr=0.01, batch=64]
+        B --> C3[Trial 3: lr=0.1, batch=128]
+        B --> C4[Trial N: ...]
+
+        C1 --> D1[Training Job 1]
+        C2 --> D2[Training Job 2]
+        C3 --> D3[Training Job 3]
+        C4 --> D4[Training Job N]
+
+        D1 --> E1[Auto-Capture:<br/>- Hyperparameters<br/>- Metrics<br/>- Artifacts<br/>- Duration]
+        D2 --> E2[Auto-Capture:<br/>- Hyperparameters<br/>- Metrics<br/>- Artifacts<br/>- Duration]
+        D3 --> E3[Auto-Capture:<br/>- Hyperparameters<br/>- Metrics<br/>- Artifacts<br/>- Duration]
+        D4 --> E4[Auto-Capture:<br/>- Hyperparameters<br/>- Metrics<br/>- Artifacts<br/>- Duration]
+    end
+
+    subgraph "Analysis in SageMaker Studio"
+        E1 --> F[Leaderboard View]
+        E2 --> F
+        E3 --> F
+        E4 --> F
+
+        F --> G[Sort by Validation AUC<br/>Trial 2: AUC=0.94 ⭐<br/>Trial 3: AUC=0.91<br/>Trial 1: AUC=0.87<br/>Trial N: ...]
+
+        G --> H[Visualization Tools]
+        H --> I[Parallel Coordinates<br/>See hyperparameter impact]
+        H --> J[Time Series Charts<br/>Compare training curves]
+        H --> K[Scatter Plots<br/>LR vs AUC relationship]
+    end
+
+    subgraph "Best Model Selection & Deployment"
+        G --> L[Select Trial 2<br/>Best AUC=0.94]
+        L --> M[View Complete Metadata:<br/>- Code version: commit abc123<br/>- Data: s3://bucket/train.csv<br/>- Instance: ml.p3.2xlarge<br/>- Duration: 45 min]
+
+        M --> N[Register in Model Registry]
+        N --> O[Model Package v1.0<br/>Links back to Trial 2]
+
+        O --> P[Deploy to Production]
+        P --> Q[Complete Lineage:<br/>Production Model → Trial 2 → Training Data]
+    end
+
+    style C2 fill:#d4f4dd
+    style E2 fill:#fff4e1
+    style L fill:#e1ffe1
+    style Q fill:#e1f5ff
+```
+
+### Experiments vs TensorBoard vs Model Registry
+
+```mermaid
+graph LR
+    subgraph "During Training"
+        A[Training Job] --> B[TensorBoard<br/>Real-time Visualization]
+        B --> C[Monitor:<br/>- Loss curves<br/>- Gradients<br/>- Weights<br/>Step-level detail]
+
+        A --> D[SageMaker Experiments<br/>Trial Tracking]
+        D --> E[Capture:<br/>- Hyperparameters<br/>- Final metrics<br/>- Artifacts<br/>Trial-level summary]
+    end
+
+    subgraph "After Training"
+        E --> F[Compare 100 Trials<br/>Leaderboard]
+        F --> G[Best Trial<br/>AUC=0.94]
+
+        G --> H[Model Registry<br/>Production Catalog]
+        H --> I[Register Model v1.0<br/>Status: Approved]
+
+        I --> J[Deploy to Endpoint]
+
+        J --> K[Lineage:<br/>Endpoint → Model → Trial → Data]
+    end
+
+    subgraph "Use Cases"
+        C --> L[Debug Training:<br/>Vanishing gradients?<br/>Overfitting?]
+
+        F --> M[Hyperparameter Analysis:<br/>Which LR is best?<br/>Compare 50 trials]
+
+        K --> N[Compliance:<br/>Reproduce model<br/>Audit trail]
+    end
+
+    style B fill:#fff4e1
+    style D fill:#e1f5ff
+    style H fill:#e1ffe1
+```
+
 **Definitions:**
 - **Experiment:** High-level container for related trials (e.g., "fraud-detection-model-v2")
 - **Trial:** Single training run with specific hyperparameters (e.g., "learning-rate-0.01-run")

@@ -5,6 +5,107 @@
 ## Overview
 Model monitoring ensures ML models continue to perform well in production by detecting data drift, model degradation, and bias.
 
+## Model Monitoring Flow `#important`
+
+### Continuous Monitoring and Retraining Loop
+
+```mermaid
+graph TB
+    subgraph "Production Endpoint"
+        A[Incoming Requests] --> B[SageMaker Endpoint<br/>Model v1.0]
+        B --> C[Predictions]
+        C --> D[Response to Client]
+    end
+
+    subgraph "Data Capture"
+        B --> E[Data Capture<br/>Enabled on Endpoint]
+        E --> F[Capture Input Features<br/>+ Predictions]
+        F --> G[Store in S3<br/>timestamped JSONL]
+    end
+
+    subgraph "Immediate Monitoring - No Labels Needed"
+        G --> H[Data Quality Monitor<br/>Scheduled Hourly/Daily]
+        H --> I[Compare to Baseline<br/>Training Data Stats]
+        I --> J{Data<br/>Drift?}
+        J -->|Yes| K[⚠️ CloudWatch Alarm<br/>Input Distribution Changed]
+        K --> L[SNS Notification<br/>Alert Team]
+    end
+
+    subgraph "Delayed Monitoring - Requires Labels"
+        G --> M[Wait for Ground Truth<br/>Hours/Days/Weeks]
+        M --> N[Ground Truth Labels<br/>Actual Outcomes]
+        N --> O[Model Quality Monitor<br/>Scheduled Weekly]
+        O --> P[Calculate Metrics<br/>Accuracy, Precision, Recall]
+        P --> Q{Performance<br/>Drop?}
+        Q -->|Yes| R[⚠️ CloudWatch Alarm<br/>Model Degraded]
+        R --> L
+    end
+
+    subgraph "Retraining Decision"
+        L --> S{Retrain<br/>Needed?}
+        S -->|Yes| T[Trigger Retraining<br/>Lambda/Step Functions]
+        S -->|Manual Review| U[Data Science Team<br/>Investigates]
+
+        T --> V[SageMaker Pipeline<br/>Automated Retraining]
+        V --> W[New Training Data<br/>Recent Production Data]
+        W --> X[Train Model v2.0]
+        X --> Y[Evaluate Performance]
+        Y --> Z{Better than<br/>v1.0?}
+        Z -->|Yes| AA[Register v2.0<br/>Model Registry]
+        Z -->|No| AB[Keep v1.0<br/>Investigate Issues]
+
+        AA --> AC[Approval Workflow]
+        AC --> AD{Approved?}
+        AD -->|Yes| AE[Deploy v2.0<br/>Canary 5%]
+        AD -->|No| AB
+
+        AE --> AF{Monitor<br/>v2.0 Safe?}
+        AF -->|Yes| AG[Promote to 100%]
+        AF -->|No| AH[Rollback to v1.0]
+
+        AG --> B
+    end
+
+    style J fill:#fff4e1
+    style Q fill:#fff4e1
+    style K fill:#ffcccc
+    style R fill:#ffcccc
+    style AG fill:#d4f4dd
+    style AH fill:#ffcccc
+```
+
+### Data Quality vs Model Quality Monitoring
+
+```mermaid
+graph LR
+    subgraph "Data Quality - Immediate"
+        A1[Production Input<br/>Features Only] --> B1[Compare to<br/>Training Baseline]
+        B1 --> C1{Statistical<br/>Drift?}
+        C1 -->|Yes| D1[⚠️ Alert: Input Changed<br/>Example: Age distribution shifted]
+        C1 -->|No| E1[✅ Data looks normal]
+
+        F1[No Labels Needed<br/>❌ Ground Truth]
+        F1 -.-> A1
+    end
+
+    subgraph "Model Quality - Delayed"
+        A2[Production Predictions] --> B2[Wait for<br/>Ground Truth]
+        B2 --> C2[Ground Truth<br/>Arrives Later]
+        C2 --> D2[Calculate Metrics<br/>Accuracy, Precision, Recall]
+        D2 --> E2{Performance<br/>Drop?}
+        E2 -->|Yes| F2[⚠️ Alert: Model Degraded<br/>Example: Accuracy 95% → 85%]
+        E2 -->|No| G2[✅ Model performing well]
+
+        H2[Requires Labels<br/>✅ Ground Truth]
+        H2 -.-> C2
+    end
+
+    style D1 fill:#ffcccc
+    style F2 fill:#ffcccc
+    style E1 fill:#d4f4dd
+    style G2 fill:#d4f4dd
+```
+
 ## SageMaker Model Monitor `#exam-tip`
 **Purpose:** Detect model and data quality issues in production
 

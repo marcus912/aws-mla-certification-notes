@@ -5,6 +5,90 @@
 ## Overview
 CI/CD for Machine Learning automates the process of building, testing, and deploying ML models through repeatable pipelines.
 
+## Complete MLOps Pipeline `#important`
+
+### End-to-End ML Pipeline Flow
+
+```mermaid
+graph TB
+    subgraph "1. Data Pipeline"
+        A[Raw Data in S3] --> B[Data Processing<br/>SageMaker Processing]
+        B --> C[Feature Engineering]
+        C --> D[Feature Store<br/>Online + Offline]
+    end
+
+    subgraph "2. Model Development"
+        D --> E[Data Split<br/>Train/Val/Test]
+        E --> F[Model Training<br/>SageMaker Training Job]
+        F --> G[Hyperparameter Tuning<br/>HPO Jobs]
+        G --> H[SageMaker Experiments<br/>Track all trials]
+    end
+
+    subgraph "3. Model Evaluation"
+        H --> I[Best Model Selection]
+        I --> J[Model Evaluation<br/>Metrics: Accuracy, AUC, F1]
+        J --> K{Meets<br/>Threshold?}
+        K -->|No| F
+    end
+
+    subgraph "4. Model Registry"
+        K -->|Yes| L[Register Model<br/>Model Registry]
+        L --> M[Model Package<br/>Version 1.0]
+        M --> N{Manual<br/>Approval}
+        N -->|Rejected| F
+        N -->|Approved| O[Approved Model]
+    end
+
+    subgraph "5. Deployment Pipeline"
+        O --> P[SageMaker Pipeline<br/>Automated Deployment]
+        P --> Q[Dev Environment<br/>Testing]
+        Q --> R{Pass<br/>Tests?}
+        R -->|No| F
+        R -->|Yes| S[Staging Environment]
+        S --> T{A/B Test<br/>Success?}
+        T -->|No| F
+        T -->|Yes| U[Production Endpoint<br/>Real Traffic]
+    end
+
+    subgraph "6. Monitoring & Feedback"
+        U --> V[Data Capture<br/>Inputs + Predictions]
+        V --> W[Model Monitor<br/>Data Quality]
+        W --> X{Drift<br/>Detected?}
+        X -->|Yes| Y[CloudWatch Alarm]
+        Y --> Z[Trigger Retraining]
+        Z --> F
+        X -->|No| V
+
+        V --> AA[Ground Truth Labels<br/>Delayed]
+        AA --> AB[Model Quality<br/>Monitor]
+        AB --> AC{Performance<br/>Drop?}
+        AC -->|Yes| Y
+        AC -->|No| V
+    end
+
+    style A fill:#e1f5ff
+    style D fill:#fff4e1
+    style H fill:#f0e1ff
+    style O fill:#e1ffe1
+    style U fill:#ffe1e1
+    style Y fill:#ffcccc
+```
+
+### Pipeline Components Mapping to AWS Services
+
+| Stage | AWS Service | Purpose |
+|-------|-------------|---------|
+| **Data Ingestion** | S3, Kinesis, Glue | Collect and store raw data |
+| **Data Processing** | SageMaker Processing, EMR, Glue | Clean, transform, feature engineering |
+| **Feature Store** | SageMaker Feature Store | Centralized feature repository |
+| **Training** | SageMaker Training Jobs | Train models at scale |
+| **Experiment Tracking** | SageMaker Experiments | Track all training runs |
+| **Hyperparameter Tuning** | SageMaker HPO | Optimize hyperparameters |
+| **Model Registry** | SageMaker Model Registry | Version and approve models |
+| **CI/CD Pipeline** | SageMaker Pipelines, CodePipeline | Automate workflow |
+| **Deployment** | SageMaker Endpoints | Host models for inference |
+| **Monitoring** | SageMaker Model Monitor, CloudWatch | Detect drift and performance issues |
+
 ## Model Registry & Versioning `#important`
 
 ### SageMaker Model Registry
