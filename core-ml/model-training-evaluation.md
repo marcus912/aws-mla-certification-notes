@@ -346,25 +346,14 @@ Techniques and best practices for training ML models and evaluating their perfor
 
 **1. Hyperparameter Range Selection**
 
-**Start Wide, Then Narrow:**
-```
-Iteration 1 (Wide exploration):
-  learning_rate: 0.0001 to 1.0
-
-Iteration 2 (Narrow refinement):
-  learning_rate: 0.01 to 0.1  (based on Iteration 1 results)
-```
+**Start Wide, Then Narrow:** Iteration 1 (wide: 0.0001-1.0) → Iteration 2 (narrow: 0.01-0.1 based on results)
 
 **Use Logarithmic Scale for Learning Rate:** `#important`
-- **Why:** Learning rates vary by orders of magnitude (0.001 vs 0.1)
-- **How:** Use log scale in range definition
-- **Example:** `learning_rate: (0.001, 0.3, 'Logarithmic')`
-- **Effect:** Samples more values in lower ranges (0.001, 0.003, 0.01, 0.03, 0.1)
+- Learning rates vary by orders of magnitude (0.001 vs 0.1)
+- Example: `learning_rate: (0.001, 0.3, 'Logarithmic')`
+- Effect: Samples more values in lower ranges (0.001, 0.003, 0.01, 0.03, 0.1)
 
-**Linear Scale for Other Parameters:**
-- Batch size: Linear or Integer scale
-- Tree depth: Integer scale
-- Number of layers: Integer scale
+**Linear Scale for Other Parameters:** Batch size, tree depth, number of layers use linear/integer scale
 
 **2. Hyperparameter Priority** `#exam-tip`
 
@@ -392,15 +381,9 @@ Iteration 2 (Narrow refinement):
 - **6+ hyperparameters:** Random search first, then Bayesian on promising region
 
 **Recommended tuning combinations:**
-
-**Minimal (Fast & Cost-effective):**
-- Learning rate only
-
-**Standard (Balanced):**
-- Learning rate + Batch size + Regularization (L1/L2)
-
-**Comprehensive (High accuracy needed):**
-- Learning rate + Batch size + Regularization + Model architecture + Epochs
+- **Minimal:** Learning rate only
+- **Standard:** Learning rate + Batch size + Regularization
+- **Comprehensive:** Learning rate + Batch size + Regularization + Model architecture + Epochs
 
 **4. Training Job Limits**
 
@@ -442,25 +425,11 @@ Iteration 2 (Narrow refinement):
 
 **What it is:** Reuse hyperparameter search results from previous tuning jobs
 
-**When to use:**
-- **Iterative refinement:** Start with wide range, narrow down in second job
-- **Incremental dataset:** Reuse tuning from smaller dataset as starting point
-- **Similar problem:** Transfer knowledge from related task
-- **Resume interrupted job:** Continue from where it stopped
+**When to use:** Iterative refinement (wide→narrow), incremental datasets, similar problems, resume interrupted jobs
 
-**Benefits:**
-- ✅ Faster convergence (don't start from scratch)
-- ✅ Cost savings (fewer jobs needed)
-- ✅ Transfer learning for hyperparameters
+**Benefits:** Faster convergence, cost savings, transfer learning for hyperparameters
 
-**Configuration:**
-```python
-parent_tuning_jobs = [
-    {'HyperParameterTuningJobName': 'previous-job-name'}
-]
-```
-
-**Limitation:** Can only warm start from jobs with same hyperparameter names
+**Limitation:** Must have same hyperparameter names
 
 **7. Cost Optimization** `#exam-tip`
 

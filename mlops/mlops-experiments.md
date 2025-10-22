@@ -242,29 +242,18 @@ run.log_artifact(name="confusion_matrix.png", value="s3://bucket/cm.png")
 
 ### Best Practices `#exam-tip`
 
-**1. Naming Conventions**
-```
-Experiment: {project}-{model-type}-{version}
-Example: "fraud-detection-xgboost-v2"
+**Naming Conventions:**
+- Experiment: `{project}-{model-type}-{version}` (e.g., "fraud-detection-xgboost-v2")
+- Trial: `{hyperparams-summary}-{date}` (e.g., "lr-0.01-depth-5-2025-01-15")
 
-Trial: {hyperparams-summary}-{date}
-Example: "lr-0.01-depth-5-2025-01-15"
-```
+**Metric Logging:**
+- Log validation metrics (not just training) for comparison
+- Use consistent naming across trials (e.g., always "val_auc")
 
-**2. Metric Logging**
-- **Log validation metrics** (not just training) - Use for comparison
-- **Log business metrics** if relevant (e.g., cost per prediction)
-- **Use consistent naming** across trials (e.g., always "val_auc", not sometimes "validation_auc")
-
-**3. Organization**
-- **One experiment per model type/problem**
-- **New experiment for major changes** (new algorithm, new features)
-- **Group related trials** (e.g., all hyperparameter tuning trials)
-
-**4. Cleanup**
-- **Archive old experiments** after model deployment
-- **Delete failed trials** after debugging (reduce clutter)
-- **Keep production model trials** indefinitely for audit
+**Organization:**
+- One experiment per model type/problem
+- New experiment for major changes (new algorithm, new features)
+- Keep production model trials indefinitely for audit
 
 ### Experiments vs Model Registry `#exam-tip`
 
@@ -302,7 +291,6 @@ Example: "lr-0.01-depth-5-2025-01-15"
 
 ### Limitations
 
-- **Max 50,000 trials per experiment** (very high, rarely hit)
 - **Metrics logged every 5 seconds minimum** (prevent spam)
 - **Artifact size limit:** 5GB per trial component
 
@@ -505,38 +493,16 @@ estimator = TensorFlow(
 
 ### Best Practices `#exam-tip`
 
-**1. Always Enable TensorBoard** - Minimal overhead, huge benefit
+**1. Always Enable TensorBoard** - Minimal overhead, add to all training jobs:
 ```python
-# Add to all training jobs
-tensorboard_output_config={
-    'S3OutputPath': 's3://bucket/tensorboard-logs'
-}
+tensorboard_output_config={'S3OutputPath': 's3://bucket/tensorboard-logs'}
 ```
 
-**2. Organize Logs by Experiment**
-```
-s3://bucket/tensorboard/
-  └── fraud-detection/
-      ├── lr-0.001/
-      ├── lr-0.01/
-      └── lr-0.1/
-```
+**2. Organize Logs by Experiment** - Use structured S3 paths (e.g., `s3://bucket/tensorboard/fraud-detection/lr-0.01/`)
 
-**3. Log Both Training and Validation Metrics**
-```python
-# Log separate scalars for train/val
-tf.summary.scalar('loss/train', train_loss, step=epoch)
-tf.summary.scalar('loss/validation', val_loss, step=epoch)
-```
+**3. Log Both Training and Validation Metrics** - Use separate scalars for train/val comparison
 
-**4. Use Descriptive Run Names**
-- ❌ Bad: "run1", "run2", "run3"
-- ✅ Good: "lr-0.01-batch-128", "lr-0.1-batch-64"
-
-**5. Clean Up Old Logs**
-- TensorBoard logs accumulate quickly
-- Use S3 lifecycle policies to archive/delete old runs
-- Keep production model logs indefinitely
+**4. Use Descriptive Run Names** - Good: "lr-0.01-batch-128", Bad: "run1"
 
 ### Limitations `#exam-tip`
 
@@ -1026,44 +992,23 @@ artifacts = artifact.Artifact.list(
 
 ### Best Practices `#exam-tip`
 
-**1. Enable Automatic Lineage**
-- ✅ Use SageMaker services (automatic tracking)
-- ✅ No code changes needed for basic lineage
-- ❌ Don't disable lineage (always beneficial)
+**1. Enable Automatic Lineage** - Use SageMaker services (automatic tracking, no code changes needed)
 
-**2. Annotate Custom Artifacts**
+**2. Annotate Custom Artifacts** - Add metadata to artifacts for better tracking:
 ```python
-# Add metadata to artifacts for better tracking
 artifact.Artifact.create(
     artifact_name='customer-data-v2',
     artifact_type='DataSet',
     source_uri='s3://bucket/data.csv',
-    properties={
-        'version': '2.0',
-        'creation_date': '2025-01-15',
-        'rows': 1000000,
-        'features': 50,
-        'owner': 'data-team@company.com',
-        'pii_removed': 'true'  # Compliance flag
-    }
+    properties={'version': '2.0', 'rows': 1000000, 'pii_removed': 'true'}
 )
 ```
 
-**3. Query Lineage Regularly**
-- Before deploying: Check which data was used
-- After issues: Trace back to root cause
-- For audits: Generate lineage reports
-- For impact analysis: Check downstream dependencies
+**3. Query Lineage Regularly** - Before deploying, after issues, for audits, for impact analysis
 
-**4. Integrate with Model Registry**
-- Always register models (creates lineage link)
-- Use approval workflow (adds governance)
-- Tag model packages with business metadata
+**4. Integrate with Model Registry** - Always register models (creates lineage link), use approval workflow
 
-**5. Document External Artifacts**
-- For non-SageMaker data sources, create artifacts manually
-- Include source_uri for traceability
-- Add properties for context
+**5. Document External Artifacts** - For non-SageMaker data sources, create artifacts manually with source_uri
 
 ### Exam Scenarios `#important`
 
@@ -1098,7 +1043,6 @@ artifact.Artifact.create(
 
 ### Limitations
 
-- **Lineage retention:** 120 days by default (can be extended with manual artifact creation)
 - **Query limits:** Max 100 entities per query result (pagination available)
 - **Custom artifacts:** Require manual creation (not automatic)
 - **Cross-region:** Lineage is region-specific (no cross-region tracking)

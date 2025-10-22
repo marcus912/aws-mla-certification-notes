@@ -95,7 +95,7 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
 ## 📊 Repository Stats
 
 - **Total Notes:** 21 comprehensive markdown files
-- **Total Lines:** 8,708 lines of exam-focused content
+- **Total Lines:** 9,170 lines of exam-focused content
 - **Coverage:** All 4 AWS MLA exam domains (100%)
 - **Algorithms Covered:** 17 SageMaker built-in algorithms
   - Supervised: Linear Learner, XGBoost, KNN, Factorization Machines
@@ -111,7 +111,7 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
   - Data services (S3, Glue, Athena, EMR, Kinesis, Redshift, Lake Formation)
   - Data Lakes (Lake Formation: column/row security, LF-Tags, permissions)
   - Instance Types (M5, C5, P3, P4d, G4dn, G5, Inf1, Trn1) - Training & inference selection
-- **Exam Tips:** 325 `#exam-tip` tags throughout
+- **Exam Tips:** 333 `#exam-tip` tags throughout
 - **Study Time:** 10-week suggested plan in study guide
 
 ## 🤝 Contributing

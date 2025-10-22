@@ -3,7 +3,7 @@
 **Tags:** `#core` `#exam-tip` `#important`
 
 ## Overview
-Comprehensive guide to SageMaker built-in algorithms. For detailed hyperparameter tuning (Linear Learner, XGBoost), see [Amazon SageMaker](./sagemaker.md).
+Comprehensive guide to SageMaker built-in algorithms. For detailed hyperparameter tuning (Linear Learner, XGBoost), see [Amazon SageMaker](../sagemaker/sagemaker.md).
 
 ## Supervised Learning Algorithms
 
@@ -27,7 +27,7 @@ Comprehensive guide to SageMaker built-in algorithms. For detailed hyperparamete
 
 **When to use:** Simple baseline, interpretable models, fast training needed
 
-📝 **Detailed hyperparameters:** See [SageMaker - Linear Learner](./sagemaker.md#linear-learner-hyperparameters)
+📝 **Detailed hyperparameters:** See [SageMaker - Linear Learner](../sagemaker/sagemaker-hyperparameters.md#linear-learner-hyperparameters)
 
 ---
 
@@ -63,7 +63,7 @@ Comprehensive guide to SageMaker built-in algorithms. For detailed hyperparamete
 
 **Exam Note:** XGBoost is the built-in gradient boosting algorithm on SageMaker. For any gradient boosting question on the exam, choose XGBoost.
 
-📝 **Detailed hyperparameters:** See [SageMaker - XGBoost](./sagemaker.md#xgboost-hyperparameters)
+📝 **Detailed hyperparameters:** See [SageMaker - XGBoost](../sagemaker/sagemaker-hyperparameters.md#xgboost-hyperparameters)
 
 ---
 

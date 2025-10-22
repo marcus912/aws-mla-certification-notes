@@ -179,46 +179,15 @@ AWS services for generative AI, foundation models, and large language models (LL
 
 #### Agent Workflow (Orchestration) `#exam-tip`
 
-**Step-by-Step Execution:**
+**How Agents Work:**
+1. **User Request** - Natural language input
+2. **Agent Planning** - LLM analyzes request, breaks into steps
+3. **Action Selection** - Agent decides which Action Group/function to call
+4. **Execution** - Invokes Lambda functions, queries Knowledge Bases
+5. **Iteration** - Uses results to determine next action, repeats until complete
+6. **Response** - Synthesizes results into natural language
 
-1. **User Request**
-   - User: "Book me a flight to NYC next week and reserve a hotel"
-
-2. **Agent Planning** (Foundation Model Reasoning)
-   - Agent analyzes request
-   - Breaks down into steps: check calendar → search flights → book flight → search hotels → book hotel
-
-3. **Action Selection**
-   - Agent decides which Action Group to call
-   - Selects specific function from API schema
-   - Example: Calls `checkCalendar` from CalendarActions
-
-4. **Action Execution**
-   - Agent invokes Lambda function with parameters
-   - Lambda returns result
-
-5. **Knowledge Base Query** (if needed)
-   - Agent searches Knowledge Base for relevant info
-   - Example: "What's our company travel policy?"
-
-6. **Next Action**
-   - Agent uses previous results to determine next step
-   - Continues until task complete
-
-7. **Response Generation**
-   - Agent synthesizes results into natural language response
-   - Returns to user
-
-**Example Flow:**
-```
-User: "Book me a flight to NYC next week"
-
-Agent Planning:
-├─ Step 1: Call checkCalendar(nextWeek) → Returns: "Available Mon-Wed"
-├─ Step 2: Call searchFlights(NYC, Monday) → Returns: [Flight options]
-├─ Step 3: Call bookFlight(flightId=AA123) → Returns: "Booked"
-└─ Step 4: Generate response → "Booked flight AA123 to NYC on Monday"
-```
+**Example:** User: "Book flight to NYC next week" → Agent: checks calendar → searches flights → books → responds
 
 #### Agent Versions and Aliases `#important` `#exam-tip`
 
@@ -307,123 +276,38 @@ Agent Planning:
 
 #### Agent + Knowledge Bases Integration `#important` `#exam-tip`
 
-**Purpose:** Combine agent's action capabilities with RAG for information retrieval.
+**Purpose:** Combine agent actions with RAG for information retrieval
 
-**How It Works:**
-1. User asks agent a question
-2. Agent decides: "I need information from documents"
-3. Agent queries Knowledge Base automatically
-4. Retrieves relevant documents
-5. Uses retrieved info + foundation model to answer
-6. Optionally takes actions based on retrieved info
+**How It Works:** Agent queries Knowledge Base for information, then takes actions based on retrieved context
 
 **Use Cases:**
-- **Customer support agent:** Answers questions from docs, then creates support ticket
-- **HR assistant:** Looks up policies, then files leave request
-- **Sales agent:** Checks product specs, then generates quote
+- Customer support: Answers from docs + creates ticket
+- HR assistant: Looks up policies + files request
+- Sales agent: Checks product specs + generates quote
 
-**Example:**
-```
-User: "What's our return policy and process a return for order 12345?"
-
-Agent workflow:
-1. Query Knowledge Base: "return policy" → Retrieves policy document
-2. Read policy: "30-day returns accepted"
-3. Call Action Group: processReturn(orderId=12345)
-4. Response: "Per our 30-day policy, I've processed your return for order 12345"
-```
-
-**Benefits:**
-- ✅ **Up-to-date information** - Knowledge Base updated without retraining
-- ✅ **Actions + Knowledge** - Agent both retrieves info and takes actions
-- ✅ **Grounded responses** - Answers based on actual documents, not hallucinations
-
-**Exam Tip:** `#exam-tip`
-- **Agent + Knowledge Base** = RAG + Actions
-- Use when you need both information retrieval and task execution
-- Knowledge Base provides context, Action Groups provide capabilities
+**Exam Tip:** Agent + Knowledge Base = RAG + Actions (information retrieval + task execution)
 
 #### Agent Session State
 
-**Purpose:** Maintain context across multiple interactions in a conversation.
+**Purpose:** Maintain context across multi-turn conversations
 
-**Features:**
-- **Session ID** - Track conversation thread
-- **Context retention** - Remember previous messages
-- **Multi-turn conversations** - Agent remembers what user said earlier
-- **State management** - Track progress in multi-step tasks
-
-**Example:**
-```
-Turn 1:
-User: "I need to book a flight to NYC"
-Agent: "When would you like to travel?"
-
-Turn 2:
-User: "Next Monday"
-Agent: [Remembers: destination=NYC, date=next Monday]
-      "Found 3 flights. Would you like economy or business class?"
-
-Turn 3:
-User: "Economy"
-Agent: [Remembers all previous context]
-      "Booked economy flight to NYC next Monday"
-```
+**Features:** Session ID tracks conversation, agent remembers previous messages and context
 
 #### Use Cases `#exam-tip`
 
-**1. Customer Service Automation**
-- **Problem:** Handle customer requests that require multiple actions
-- **Solution:** Agent with Action Groups for ticket creation, order lookup, refund processing
-- **Benefit:** Autonomous resolution without human intervention
-
-**2. Travel Booking Assistant**
-- **Problem:** Book complex itineraries (flights, hotels, rental cars)
-- **Solution:** Agent with Action Groups for each booking service
-- **Benefit:** Natural language interface, multi-step orchestration
-
-**3. IT Help Desk**
-- **Problem:** Troubleshoot issues and execute fixes
-- **Solution:** Agent with Knowledge Base (troubleshooting docs) + Action Groups (reset passwords, provision resources)
-- **Benefit:** Answer questions + take corrective actions
-
-**4. Sales Assistant**
-- **Problem:** Answer product questions and generate quotes
-- **Solution:** Agent with Knowledge Base (product docs) + Action Group (CRM integration)
-- **Benefit:** Informed responses + automated quote generation
-
-**5. HR Assistant**
-- **Problem:** Answer policy questions and process requests
-- **Solution:** Agent with Knowledge Base (HR policies) + Action Groups (leave requests, benefits enrollment)
-- **Benefit:** Self-service for employees
+**Common Patterns:**
+- **Customer Service:** Handle requests with multiple actions (tickets, orders, refunds)
+- **Travel Booking:** Multi-step itineraries (flights, hotels, cars)
+- **IT Help Desk:** Knowledge Base (docs) + Action Groups (password resets, provisioning)
+- **Sales Assistant:** Knowledge Base (products) + Action Groups (CRM, quotes)
+- **HR Assistant:** Knowledge Base (policies) + Action Groups (leave, benefits)
 
 #### Best Practices `#exam-tip`
 
-**1. Agent Instructions**
-- Be specific about agent role and capabilities
-- Include examples of desired behavior
-- Set clear boundaries ("Don't process refunds over $1000 without approval")
-
-**2. Action Groups**
-- **Single responsibility** - Each Action Group focused on one domain
-- **Clear descriptions** - Help agent choose correct action
-- **Error handling** - Lambda functions return clear error messages
-
-**3. Versioning Strategy**
-- Always test in DRAFT or TEST alias before production
-- Create version before deploying to PROD
-- Keep 2-3 recent versions for quick rollback
-- Document what changed in each version
-
-**4. Knowledge Base Integration**
-- Keep documents updated in Knowledge Base
-- Use specific, well-structured documents
-- Test agent's retrieval quality
-
-**5. Monitoring**
-- Track agent invocations in CloudWatch
-- Monitor Lambda function execution times
-- Alert on agent errors or failures
+- **Instructions:** Be specific about role, capabilities, and boundaries
+- **Action Groups:** Single responsibility per group, clear descriptions, error handling
+- **Versioning:** Test in DRAFT/TEST alias before PROD, keep 2-3 versions for rollback
+- **Monitoring:** Track invocations in CloudWatch, alert on errors
 
 #### Limitations `#exam-tip`
 
@@ -545,30 +429,12 @@ Agent: [Remembers all previous context]
 
 ### Use Cases `#exam-tip`
 
-**1. Conversational AI (Chatbots)**
-- **Problem:** Build customer service chatbot
-- **Solution:** Bedrock with Claude + RAG (company docs)
-- **Benefit:** No training, just provide context via RAG
-
-**2. Document Summarization**
-- **Problem:** Summarize lengthy reports automatically
-- **Solution:** Bedrock with Titan Text or Claude
-- **Benefit:** API call, no model training
-
-**3. Content Generation**
-- **Problem:** Generate marketing copy, product descriptions
-- **Solution:** Bedrock with Claude or Titan Text
-- **Benefit:** Consistent, fast content creation
-
-**4. Semantic Search**
-- **Problem:** Search company knowledge base by meaning, not keywords
-- **Solution:** Bedrock Embeddings + Vector database (OpenSearch)
-- **Benefit:** Find relevant docs even with different wording
-
-**5. Code Generation**
-- **Problem:** Help developers write code faster
-- **Solution:** Bedrock with Claude (good at coding)
-- **Benefit:** Generate boilerplate, explain code
+**Common Bedrock Use Cases:**
+- **Conversational AI:** Chatbots with Claude + RAG (no training needed)
+- **Document Summarization:** Titan Text or Claude via API
+- **Content Generation:** Marketing copy, product descriptions
+- **Semantic Search:** Bedrock Embeddings + OpenSearch (meaning-based search)
+- **Code Generation:** Claude for code assistance
 
 ### Integration with AWS Services
 
@@ -607,31 +473,11 @@ Agent: [Remembers all previous context]
 
 ### Best Practices `#exam-tip`
 
-**1. Prompt Engineering**
-- Clear, specific instructions
-- Provide examples (few-shot learning)
-- Use system prompts for consistent behavior
-
-**2. Use RAG for Knowledge**
-- Don't fine-tune for knowledge updates
-- Use RAG to provide current information
-- Cheaper and more flexible than fine-tuning
-
-**3. Implement Guardrails**
-- Always use guardrails for customer-facing applications
-- Filter PII, harmful content
-- Comply with regulations
-
-**4. Choose Right Model**
-- Start with smaller, cheaper models (Titan, Claude Haiku)
-- Use larger models (Claude Opus) only when needed
-- Test multiple models in playground
-
-**5. Monitor Costs**
-- Track token usage
-- Optimize prompts (fewer tokens)
-- Cache common responses
-- Use provisioned throughput for high volume
+- **Prompt Engineering:** Clear instructions, examples (few-shot learning), system prompts
+- **Use RAG for Knowledge:** Cheaper than fine-tuning, provides current information
+- **Implement Guardrails:** Filter PII, harmful content for customer-facing apps
+- **Choose Right Model:** Start small (Titan, Claude Haiku), test in playground
+- **Monitor Costs:** Track tokens, optimize prompts, use provisioned throughput for high volume
 
 ### Limitations `#exam-tip`
 

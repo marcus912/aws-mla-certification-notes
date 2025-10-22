@@ -55,7 +55,7 @@ Fully managed ML service for building, training, and deploying models at scale.
 - Define, orchestrate, automate ML workflows
 - Integrates with MLOps tools
 
-**📖 For detailed pipeline and CI/CD information, see [MLOps CI/CD](./mlops-cicd.md)**
+**📖 For detailed pipeline and CI/CD information, see [MLOps CI/CD](../mlops/mlops-cicd.md)**
 
 ## Pricing Model `#exam-tip`
 - Pay for compute (training, inference)
