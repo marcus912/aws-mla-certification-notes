@@ -85,6 +85,15 @@ This repository contains concise, exam-focused study notes for the AWS Machine L
   - [ ] Encryption (KMS, Secrets Manager, at rest & in transit)
   - [ ] Network Security (VPC, Security Groups, VPC Endpoints)
 
+## 📝 About Code Examples
+
+Code blocks in these notes are for:
+- **Conceptual understanding** - Illustrate how services work
+- **Parameter reference** - Show configuration options you'll see in exam scenarios
+- **NOT for memorization** - You won't write code on the exam
+
+**Focus on:** Service names, parameter names, workflow concepts - not syntax.
+
 ## Tags
 - `#core` - Core exam topic
 - `#exam-tip` - Exam-specific insight

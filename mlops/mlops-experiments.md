@@ -135,36 +135,17 @@ graph LR
 
 **Automatic Tracking (Recommended):** `#exam-tip`
 ```python
-from sagemaker.experiments import Run
-
-# Create experiment (once)
-experiment_name = "fraud-detection-experiment"
-
-# Each training run creates a trial
-with Run(
-    experiment_name=experiment_name,
-    run_name="lr-0.01-batch-128",
-    sagemaker_session=session
-) as run:
-    # Training happens here
-    estimator.fit(inputs)
-
-    # Metrics automatically captured
-    # Hyperparameters automatically logged
+# SageMaker Experiments - Key API
+with Run(experiment_name="fraud-detection", run_name="lr-0.01") as run:
+    estimator.fit(inputs)  # Auto-captures metrics, hyperparameters
 ```
 
-**SageMaker automatically creates:**
-- Experiment (if doesn't exist)
-- Trial for this run
-- Trial components for training job
-- Links all metadata
+**SageMaker automatically captures:** Hyperparameters, metrics, input data, model location, code version, duration
 
-**Manual Tracking (Custom Metrics):**
+**Manual Logging (Custom Metrics):**
 ```python
-# Log custom metrics during training
 run.log_metric(name="custom_f1_score", value=0.923)
 run.log_parameter(name="feature_count", value=150)
-run.log_artifact(name="confusion_matrix.png", value="s3://bucket/cm.png")
 ```
 
 ### Key Features
@@ -324,40 +305,13 @@ run.log_artifact(name="confusion_matrix.png", value="s3://bucket/cm.png")
 
 **1. Training Job Output (Recommended)** `#exam-tip`
 ```python
-from sagemaker.tensorflow import TensorFlow
-
-estimator = TensorFlow(
-    entry_point='train.py',
-    role=role,
-    instance_type='ml.p3.2xlarge',
-    framework_version='2.12',
-    # Enable TensorBoard logging
-    tensorboard_output_config={
-        'LocalPath': '/opt/ml/output/tensorboard',  # Inside container
-        'S3OutputPath': 's3://bucket/tensorboard-logs'  # Upload to S3
-    }
-)
-
-estimator.fit({'training': s3_data})
+# Enable TensorBoard in estimator
+tensorboard_output_config={
+    'S3OutputPath': 's3://bucket/tensorboard-logs'
+}
 ```
 
-**In training script (train.py):**
-```python
-import tensorflow as tf
-
-# TensorBoard callback
-tensorboard_callback = tf.keras.callbacks.TensorBoard(
-    log_dir='/opt/ml/output/tensorboard',
-    histogram_freq=1,
-    write_graph=True
-)
-
-model.fit(
-    x_train, y_train,
-    callbacks=[tensorboard_callback],
-    epochs=10
-)
-```
+**In training script:** Add TensorBoard callback (`tf.keras.callbacks.TensorBoard(log_dir='/opt/ml/output/tensorboard')`)
 
 **Result:** Logs automatically uploaded to S3 during/after training
 
@@ -378,21 +332,8 @@ model.fit(
 
 **SageMaker Debugger + TensorBoard:**
 ```python
-from sagemaker.debugger import TensorBoardOutputConfig
-
-tensorboard_config = TensorBoardOutputConfig(
-    s3_output_path='s3://bucket/debugger-tensorboard',
-    container_local_output_path='/opt/ml/output/tensorboard'
-)
-
-estimator = TensorFlow(
-    entry_point='train.py',
-    role=role,
-    instance_type='ml.p3.2xlarge',
-    tensorboard_output_config=tensorboard_config,
-    # Debugger automatically captures tensors
-    debugger_hook_config=debugger_config
-)
+# TensorBoardOutputConfig - Debugger integration
+TensorBoardOutputConfig(s3_output_path='s3://bucket/debugger-tensorboard')
 ```
 
 **What Debugger adds to TensorBoard:**
