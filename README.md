@@ -189,12 +189,8 @@ aws-mla-certification-notes/
 
 MIT License - Feel free to use these notes for your own exam preparation!
 
-## 🙏 Acknowledgments
-
-Created with assistance from Claude (Anthropic) to help ML practitioners prepare efficiently for the AWS MLA certification.
-
 ---
 
 **Good luck with your certification journey! 🎓**
 
-If you find these notes helpful, please ⭐ star this repository!
+If you find these notes helpful, please ⭐ star this repository.
