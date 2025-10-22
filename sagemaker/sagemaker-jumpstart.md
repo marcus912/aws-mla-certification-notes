@@ -2,7 +2,7 @@
 
 **Tags:** `#important` `#exam-tip`
 
-## SageMaker JumpStart `#important` `#exam-tip`
+## Overview
 
 ### What is JumpStart?
 
@@ -287,8 +287,6 @@ predictor = estimator.deploy()
 - Detects data drift, model quality degradation
 - Automatic baseline creation
 - Continuous monitoring
-
-## SageMaker Autopilot `#exam-tip`
 
 ## Related Topics
 - [Amazon SageMaker](./sagemaker.md)

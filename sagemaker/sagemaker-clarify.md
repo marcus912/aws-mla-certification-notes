@@ -69,49 +69,6 @@ Bias in model predictions after training.
   - Disparate Impact = 0.45/0.75 = 0.60 (below 0.8 threshold → potential discrimination)
 - **Action:** Retrain with balanced data, apply fairness constraints, or adjust decision threshold
 
-## SageMaker Clarify 偏差检测 (中文解释)
-
-### 什么是偏差 (Bias)?
-
-**定义:** 机器学习模型预测中与敏感属性（受保护特征）相关的系统性不公平。
-
-**敏感属性例子:**
-- 年龄、性别、种族、民族
-- 宗教、残疾状况
-- 婚姻状况、性取向
-- 地理位置
-
-### SageMaker Clarify 检测的偏差类型
-
-#### 训练前偏差 (Pre-training Bias)
-训练数据中存在的偏差（模型训练之前）
-
-**指标:**
-- **类别不平衡 (Class Imbalance, CI)** - 标签分布不均
-- **标签比例差异 (DPL)** - 比较不同组之间的正向结果率
-  - 例子：A组批准率70% vs B组批准率30%
-
-#### 训练后偏差 (Post-training Bias)
-模型预测中的偏差（训练之后）
-
-**指标:**
-- **预测标签差异 (DPL)** - 比较组间预测率
-- **不同影响 (Disparate Impact, DI)** - 组间正向预测的比率
-  - 理想值 = 1
-  - DI < 0.8 可能表明存在歧视（美国法律阈值）
-
-### 实际例子
-
-**场景:** 贷款审批模型
-- **敏感属性:** 性别（男/女）
-- **检测到训练前偏差:**
-  - 训练数据：80%男性申请人获批，50%女性申请人获批
-  - 标签比例差异 = 0.30（历史数据存在偏差）
-- **检测到训练后偏差:**
-  - 模型预测：75%男性获批，45%女性获批
-  - 不同影响 = 0.45/0.75 = 0.60（低于0.8阈值 → 可能存在歧视）
-- **行动:** 使用平衡数据重新训练、应用公平性约束、或调整决策阈值
-
 ## Model Explainability
 
 ### SHAP (SHapley Additive exPlanations) `#exam-tip`
